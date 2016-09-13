@@ -93,3 +93,6 @@ ENV/
 
 # pycharm files
 .idea/
+
+# django
+db.sqlite3
