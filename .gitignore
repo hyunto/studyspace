@@ -1,0 +1,2 @@
+.idea/          # ignore all files for pycharm
+venv/           # python virtual environment files
