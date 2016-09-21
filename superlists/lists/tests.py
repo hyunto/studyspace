@@ -17,3 +17,21 @@ class HomePageTest(TestCase):
         response = home_page(request)
         expected_html = render_to_string('home.html')
         self.assertEqual(response.content.decode(), expected_html)
+
+
+    def test_home_can_save_a_POST_request(self):
+        # 설정
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['item_text'] = '신규 작업 아이템'
+
+        # 처리
+        response = home_page(request)
+
+        # 어설션
+        self.assertIn('신규 작업 아이템', response.content.decode())
+        expected_html = render_to_string(
+            'home.html',
+            { 'new_item_text': '신규 작업 아이템'}
+        )
+        self.assertEqual(response.content.decode(), expected_html)
