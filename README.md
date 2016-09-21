@@ -7,3 +7,4 @@
 ## 참고 자료
 * [From List Comprehensions to Generator Expressions](http://python-history.blogspot.kr/2010/06/from-list-comprehensions-to-generator.html)
 * [Outside-In development with Double Loop TDD](http://coding-is-like-cooking.info/2013/04/outside-in-development-with-double-loop-tdd/)
+* [Code Smells](https://blog.codinghorror.com/code-smells/)
