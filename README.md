@@ -3,10 +3,12 @@
 
 # 노트
 > **Java의 리플렉션(Reflection)**
+>
 > Java에서는 리플렉션이라는 기능을 통해 인스턴스화된 객체로부터 원래 클래스의 구조를 파악해내어 동적으로 조작하는 것이 가능하다. 마치 기계를 분해해서 마음대로 재구성하는 것처럼 말이다. 리플렉션을 이용하면 private 메소드나 필드까지도 마음대로 조작할 수 있다. 리플렉션을 사용하면 이런식으로 Java의 일반적인 규칙들을 무시할 수도 있기 때문에 보통 한정적으로만 사용할 것을 권장한다. 그리고 시스템 비용이 매우 많이 드는 기능이다.
 
 ---
 > **JUnit4의 특징**
+>
 > 1. Java 5 Annotation 지원
 > 2. test라는 글자로 method 이름을 시작해야 한다는 제약 해소 : Test 메소드는 `@Test`를 붙인다.
 > 3. 좀 더 유연한 픽스쳐 : `@BeforeClass`, `@AfterClass`, `@Before`, `@After`
@@ -16,7 +18,8 @@
 > 7. 배열 지원 : `assertArrayEquals([message], expected, actual);`
 > 8. @RunWith(클래스이름.class) : JUnit Test 클래스를 실행하기 위한 러너(Runner)를 명시적으로 지정한다. @RunWith는 junit.runner.Runner를 구현한 외부 클래스를 인자로 갖는다.
 > 9. @SuiteClasses(Class[]) : 보통 여러 개의 테스트 클래스를 수행하기 위해 쓰인다. `@RunWith`를 이용해 Suite.class를 러너로 사용한다.
-> 10. 파라미터를 이용한 테스트
+> 10. 비교 표현을 위한 테스트 매처 라이브러리(Test Macher Library)인 **Hamcrest** 도입
+> 11. 파라미터를 이용한 테스트
 > ```java
 @RunWith(Parameterized.class)
 @Parameters
@@ -24,7 +27,7 @@ public static Collection data() {
 	...
 }
 ```
-> 11. 비교 표현을 위한 테스트 매처 라이브러리(Test Macher Library)인 Hamcrest 도입
+
 
 
 # TDD 개발 진행 방식
