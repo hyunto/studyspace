@@ -6,7 +6,7 @@
 # TDD 개발 진행 방식
 ![TDD Global Lifecycle](https://upload.wikimedia.org/wikipedia/commons/0/0b/TDD_Global_Lifecycle.png)
 
-TDD를 이용한 개발은 크게 ** 질문 -> 응답 -> 정제 ** 과정을 반복적으로 수행하며 이뤄진다.
+TDD를 이용한 개발은 크게 **질문 -> 응답 -> 정제** 과정을 반복적으로 수행하며 이뤄진다.
 
 * 질문
 	* 작성하고자 하는 메소드나 기능이 무엇인지 선별하고 작성 완료 조건을 정해서 실패하는 테스트 케이스를 작성하는 것
