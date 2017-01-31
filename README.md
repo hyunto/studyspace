@@ -1,5 +1,7 @@
 # test_driven_development_book
-테스트 주도 개발(TDD)  실천법과 도구 스터디
+[테스트 주도 개발 (고품질 쾌속개발을 위한 TDD 실천법과 도구)](http://book.naver.com/bookdb/book_detail.nhn?bid=6291557) 스터디
+
+
 
 # 노트
 > **Java의 리플렉션(Reflection)**
