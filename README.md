@@ -263,9 +263,12 @@ public void testGetOrderPrice_discountableItem() throws Exception {
 그러나 보통 행위 기반 테스트는 복잡한 시나리오가 사용되는 경우가 많고, 모양 및 작성 측면에서 어색한 경우가 많다. 따라서 만일 상태 기반 테스트를 수행할 수 있는 상황이라면 굳이 행위 기반 테스트는 만들지 않는 것이 좋다.
 
 > **상태 기반 테스트(State Base Test)**
+> 
 > 상태 기반 테스트는 테스트 대상 클래스의 메소드를 호출하고, 그 결과값과 예상값을 비교하는 식으로 동작한다.
 > 
+> ---
 > **행위 기반 테스트(Behavior Base Test)**
+> 
 > 행위 기반 테스트는 올바른 로직 수행에 판단의 근거로 "특정한 동작 수행 여부"를 이용한다.
 > 보통은 메소드의 리턴값이 없거나 리턴값을 확인하는 것만으로는 예상대로 동작했음을 증명하기 어려운 경우에 사용한다.
 > 즉, 예상되는 행위들을 미리 시나리오로 만들어 놓고 해당 시나리오대로 동작이 발생했는지 여부를 확인하는 것이 핵심이다.
@@ -279,3 +282,59 @@ Mock 프레임워크를 이용해 간단히 클래스만 인스턴스화하면 *
 
 **따라서 최근엔 Mocking 한다라고 하면 앞서 적은 행위 기반 테스트 객체를 의미하는 것이 아닌 테스트 더블 객체를 의미한다.**
 
+
+## Mockito
+간단히 말해서 EasyMock, jMock 등 이전의 Mock 프레임워크의 단점을 보완하기 위해 나온 Mock 프레임워크.
+이전의 Mock 프레임워크는 행위 기반 테스트에 집중했다면 Mockito는 상태 기반 테스트에 집중한다.
+
+### Mockito의 장점
+1. 테스트 자체에 집중한다 : 테스트의 행위와 반응(Interaction)에만 집중해서 테스트 메소드를 작성할 수 있게 한다.
+2. 테스트 스텁을 만드는 것과 검증을 분리시켰다.
+3. Mock 만드는 방법을 단일화했다.
+4. 테스트 스텁을 만들기 쉽다.
+5. API가 간단하다.
+6. 프레임워크가 지원해주지 않으면 안되는 코드를 최대한 배제했다
+7. 실패 시에 발생하는 에러 추적(Stack Trace)가 깔끔하다.
+
+### Mockito 사용법
+기존 프레임워크는 **스텁->예상->수행->검증**의 단계를 거쳤다면 Mockito는 **스텁->수행->검증**으로 단순화했다.
+
+Mockito는 Stub 작성과 Verify가 중심을 이루며 다음 순서로 진행된다 :
+
+| 순서 | 내용 | 예제 |
+| --- | --- | --- |
+| Mock 객체  생성 | 인터페이스에 해당하는 Mock 객체를 만든다. | `Mockito.mock(타깃 인터페이스);` |
+| Stub 생성 | 테스트에 필요한 Mock 객체의 동작을 지정한다. (단, 필요시에만) | `when(Mock_객체의_메소드).thenReturn(리턴값);` `when(Mock_객체의_메소드).thenThrow(예외);` |
+| 수행 (Exercise) | 테스트 메소드 내에서 Mock 객체를 사용한다. |  |
+| 검증 (Verify) | 메소드가 예상대로 호출됐는지 검증한다. | `verify(Mock_객체).Mock_객체의_메소드;` `verify(Mock_객체, 호출횟수지정_메소드).Mock_객체의_메소드;` |
+
+### Argument Matcher
+
+| 종류 | 내용 |
+| --- | --- |
+| **any 타입** | anyInteger(), anyBoolean(), any() 등의 Java 타입. null이거나 해당 타입이면 만족한다. |
+| anyCollection, anyCollectionOf | List, Map, Set 등 Collection 객체면 무방하다. 자연스런 문장을 위해 사용한다. |
+| argThat(HamcrestMatcher) | HamcrestMatcher 부분에  Hamcrest Matcher를 사용하려 할때 사용할 수 있다. |
+| **eq** | Argument Matcher에서 한번 사용된 Java 타입을 그대로는 쓸 수 없다. 이때 사용된다. |
+| **anyVararg** | 여러 개의 인자를 지칭할 때 사용한다. |
+| matches(String regex) | 정규표현식으로 인자(Argument) 대상을 지칭한다. |
+| startwith(String), endWith(String) | 특정 문자열로 시작하거나 끝이면 OK |
+| anyList, anyMap, anySet | anyCollection의 디테일 버전. 해당 타입이면 만족한다. |
+| isA(Class) | 해당 클래스 타입인지 체크 |
+| isNull | Null 이면 OK |
+| isNotNull | Null 아니면 OK |
+
+### 순서 검증
+Stub으로 만들어진 Mock 객체의 메소드 호출 순서까지 검증하려 한다면 `InOrder 클래스`를 사용한다.
+
+```java
+List firstMock = mock(List.class);
+List secondMock = mock(List.class);
+
+firstMock.add("item1");
+secondMock.add("item2");
+
+InOrder inOrder = inOrder(firstMock, secondMock);
+inOrder.verify(firstMock).add("item1");
+inOrder.verify(secondMock).add("item2");
+```
