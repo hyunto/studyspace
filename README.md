@@ -39,6 +39,10 @@ public static Collection data() {
 > Stub은 많이 사용되지만 제대로 해석된 적이 거의 없다. 사전에서는 "그루터기", "꼬투리", "토막", "남은 부분" 등의 의미로 사용되지만 IT에서는 종종 "껍데기"로 사용된다.
 > 여기선 의미를 더 확장해서 "오리지널을 확인하거나 유추할 수 있는 수준의 껍데기"를 뜻한다.
 
+---
+
+> **fake vs shunt**
+> 
 
 # TDD 개발 진행 방식
 ![TDD Global Lifecycle](https://upload.wikimedia.org/wikipedia/commons/0/0b/TDD_Global_Lifecycle.png)
@@ -338,3 +342,70 @@ InOrder inOrder = inOrder(firstMock, secondMock);
 inOrder.verify(firstMock).add("item1");
 inOrder.verify(secondMock).add("item2");
 ```
+
+### Mockito의 특징적인 기능
+#### 1. void 메소드를 Stub으로 만들기
+일반적으로 void 메소드는 리턴할 내용이 없어 Stub으로 만들지 않지만, 예외(Exception) 처리에 대한 Stub이 필요할 경우 doThrow를 사용한다 : `doThrow(예외).when(Mock_객체).voidMethod();`
+
+#### 2. 콜백으로 Stub 만들기 : thenAnswer
+Mock은 보통 하드코딩된 값만 돌려주도록 만들지만, 특정 Mock 메소드에 대해 실제 로직을 구현하려 할때 콜백(CallBack) 기법을 사용한다. (비권장)
+
+```java
+when(rs.getInt("no")).thenAnswer( new Answer<Integer>() {
+	public Integer answer(InvocationOnMock invocation) throws Throwable {
+		... (생략) ...
+	}
+});
+```
+
+#### 3. 실제 객체를 Stub으로 만들기 : SPY
+실 객체도 Mock으로 만들 수 있는 강력한 기능으로 부분 Mocking이라고 불린다.
+서드파티 제품, 고칠 수 없는 라이브러리만 남아 있는 코드 등에 대해서만 한정적으로 사용하는 것을 권장한다.
+Mockito 저자는 spy 기능을 사용하면 이미 잘못된 코드를 건드리고 있다는 증거라고 이야기 하였다.
+
+#### 4. 똑똑한 NULL 처리 : SMART NULLS
+Stub으로 만들지 않은 메소드는 기본적으로 null을 리턴하며 이는 NullPointerException을 유발한다. SMART NULLS는 null 대신 규칙에 의거하여 좀 더 유용한 값으로 기본값을 리턴하도록 해준다.
+
+* SMART NULLS 규칙
+	* Primitive Wrapper 클래스는 해당 기본형 값으로 바꾼다.
+	* String은 ""로 바꾼다.
+	* 배열은 크기 0인 기본 배열 객체로 만들어준다.
+	* Collection 계열은 빈 Collection 객체로 만든다.
+
+#### 5. 행위 주도 개발(BDD) 스타일 지원
+Mockito는 `//given  //when  //then` 스타일의 행위 주도 개발(Behavior-Driven Development, BDD) 방식으로 테스트 케이스를 작성할 수 있게 지원한다.
+
+이를 사용하려면 Mockito 클래스 대신 BDDMockito를 import해야 한다.
+
+
+## Mock 사용시 유의사항
+* Mock 프레임워크가 정말 필요한지 잘 따져본다.
+	* 개발하면서 자연스럽게 Mock 객체가 필요한 부분이 나오는게 아니라 Mock 객체가 적용될만한 부분을 찾으려는 역전현상이 발생할 수도 있다.
+	* Mock 프레임워크를 사용하면 테스트 케이스 유지에 많은 비용이 들 수도 있다.
+	* Mock 객체들은 깨지기 쉬운 테스트 케이스가 되는 경향이 있다.
+	* 가능하다면 설계를 바꿔서라도 Mock이 필요 없는 구조로 만드는게 좋다.
+* 투자 대비 수익(ROI)이 확실할 때만 사용한다.
+	* 테스트용 DB를 세팅하는게 나을까? 아니면 DB 연관 기능을 Mock 객체로 만드는 것이 나을까?
+	* Mock을 사용하면 빠르게 테스트가 가능하지만 장기적으로 Mock 객체가 늘어나면서 관리가 어려워 질 수도 있다.
+	* fake vs shunt
+* 어떤 Mock 프레임워크를 사용하느냐는 핵심적인 문제가 아니다.
+* Mock은 Mock일 뿐이다.
+	* Mock 객체로 아무리 잘 동작하는 코드를 만들어도 실제 객체를 사용했을 때도 100% 잘 동작하리란 보장은 없다.
+	* 초반부터 실제 객체를 테스트에 사용할 수 있으며 그 비용이 크지 않다면 Mock 객체를 사용하지 말아라.
+
+## 궁극의 TDD 템플릿
+Mockito 개발자가 제안한 BDD 스타일의 템플릿.
+다음과 같이 주석을 달아 Context를 나누어 테스트 케이스를 작성하는 방식이다.
+
+```java
+@Test
+public void shouldDoSomethingCool() throws Exception {
+	// given : 선행조건 기술
+	
+	// when : 기능 수행
+	
+	// then : 결과 확인
+}
+```
+
+> 참고 : [//given //when //then forever](https://monkeyisland.pl/2009/12/07/given-when-then-forever/)
