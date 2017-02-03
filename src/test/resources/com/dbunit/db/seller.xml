@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<seller ID="horichoi" NAME="최승호" EMAIL="megaseller@hatmail.com" />
+	<seller ID="buymore" NAME="김용진" EMAIL="shopper@nineseller.com" />
+	<seller ID="mattwhew" NAME="이종수" EMAIL="admin@maximumsale.net" />
+</dataset>
