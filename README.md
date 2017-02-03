@@ -41,8 +41,41 @@ public static Collection data() {
 
 ---
 
-> **fake vs shunt**
+> **Fake vs Shunt**
 > 
+
+---
+
+> **DTO (Data Transfer Object) / VO (Value Object)**
+> 
+> 데이터 전달을 위해 사용되는 객체이며, 비즈니스 로직 구현이 들어가 있지 않다.
+> 에전에는 VO(Value Object)라고 불렀다.
+
+---
+
+> **DO (Domain Object)**
+> 
+> @Service 에서 사용하는 데이터 객체를 DO(Data Object, 또는 Business Object)라고 부른다.
+
+---
+
+> **DAO (Data Access Object)**
+> 
+> DB나 File 등과 데이터를 주고받기 위해 쓰이는 객체이며 보통 DTO를 매개체로 사용한다.
+
+---
+
+> **ENTITY**
+> 
+> 데이터 모델링에서 쓰이는 표현으로 DB의 테이블에 해당한다.
+
+---
+
+> **Java Bean**
+> 
+> 재사용을 위해 정의된 자바 컴포넌트
+
+
 
 # TDD 개발 진행 방식
 ![TDD Global Lifecycle](https://upload.wikimedia.org/wikipedia/commons/0/0b/TDD_Global_Lifecycle.png)
@@ -414,3 +447,77 @@ public void shouldDoSomethingCool() throws Exception {
 ```
 
 > 참고 : [//given //when //then forever](https://monkeyisland.pl/2009/12/07/given-when-then-forever/)
+
+
+
+# MVC 테스트
+## View TDD
+* Selenium : http://www.seleniumhq.org/
+* CubicTest : https://github.com/cubictest/cubictest
+
+## Controller TDD
+컨트롤러를 테스트하는 가장 간단한 방법은 View로부터 넘어오는 요청(Request)를 가상으로 만들고, 그 결과에 해당하는 응답이 예상과 일치하는지 판단하는 방법이다. 따라서 뷰를 먼저 작성할 필요가 없으며 웹 서버를 별도로 실행할 필요도 없다.
+
+```java
+@Test
+public void testSearchByEmpid() throws Exception {
+	MockHttpServletRequest request = new MockHttpServletRequest();
+	MockHttpServletResponse response = new MockHttpServletResponse();
+	
+	// View로부터 넘어오는 요청을 가상으로 만든다.
+	request.addParameter("empid", "5874");
+	
+	// 가상 요청에 따른 예상되는 응답을 만든다.
+	SearchBiz biz = mock(SearchBiz.class);
+	Employee expectedEmployee = new Employee("박성철", "5874", "fupfin", "회장");
+	when(biz.getEmployeeByEmpid(anyString())).thenReturn(expectedEmployee);
+	
+	// Mock 객체를 이용해 Model Layer를 호출한다.
+	EmployeeSearchSevlet searchServlet = new EmployeeSearchSevlet();
+	searchServlet.setModel(biz);
+	searchServlet.service(request, response);
+	
+	// 값을 검증한다.
+	Employee employee = (Employee)request.getAttribute("employee");
+	assertEquals("박성철", employee.getName());
+	assertEquals("5874", employee.getEmpid());
+	assertEquals("fupfin", employee.getId());
+	assertEquals("회장", employee.getPosition());
+	
+	assertEquals("/SearchResult.jsp", response.getForwardedUrl());
+}
+```
+
+## Model TDD
+### Model의 분류
+* 도메인 모델(Domain Model) = 데이터(Data) = DTO
+* 서비스 모델(Service Model) = 로직(Logic) = Biz(비즈니스)
+
+### Model에 따른 TDD 분류
+* 도메인 모델에 의한 TDD
+	* 대체로 DTO는 TDD로 작성하지 않는다.
+* 서비스 모델에 의한 TDD
+	* 기능 위주로 구성된 클래스 (애플리케이션의 핵심 로직이 들어가는 부분)
+	* 반드시 테스트를 작성해야 한다.
+	* 서비스 모델이 단순이 View와 Repository Layer의 통로역할만 한다면 테스트를 작성할 가치가 있는지는 좀 더 고민해보자.
+* 스쳐 지나가는 서비스 모델 (Pass Through Service Model)
+	* Model은 SQL과 DAO를 연결해주고 결과값을 객체로 받는 것이 전부인 서비스 모델
+
+## Web Application에 대한 TDD 접근 전략 정리
+* 모델, 뷰, 컨트롤러는 최대한 분리시킨다.
+* 뷰는 단순한 표현 계층 (Presentation Layer)로 보고 업무로직이 들어가지 않도록 유지한다.
+* 뷰에 대한 TDD는 ROI를 잘 따져보고, 필요하다면 TDD를 포기하고 Record & Play 방식의 툴을 사용해 기능 테스트난 회귀 테스트 비용을 줄이는 쪽으로 생산성을 높이자.
+* 컨트롤러가 프레임워크 차원에서 지원될 때는 굳이 테스트 케이스를 만들려고 하지 않는다.
+* 모델에 대한 TDD는 최대한으로 적용한다.
+
+
+
+# 안티 패턴 (Anti-Pattern)
+* 좋은 테스트 케이스 작성을 위한 규칙
+	* 하나의 테스트 케이스는 외부와 독립적이어야 한다. 따라서 다른 테스트 케이스에 영향을 주거나 받지 말아야 한다.
+	* 하나의 일관된 시나리오를 갖고 있어야 한다.
+
+중복된 코드는 리팩토링 대상이다. 
+하지만 테스트 코드에서는 지나치게 리팩토링을 할 경우 테스트 케이스의 시나리오 가독성이 떨어질 수도 있으니 유의해야 한다.
+
+> 참고 : [TDD 안티패턴(Anti-pattern), 전통적으로 잘못 인식되어 있는 테스트 메소드의 리팩터링](http://blog.doortts.com/123)

@@ -19,6 +19,10 @@ dependencies {
 	compile group: 'org.projectlombok', name: 'lombok', version: '1.16.12'
 	compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.22'
 	compile group: 'org.unitils', name: 'unitils-core', version: '3.4.6'
+
+compile group: 'org.springframework', name: 'spring-test', version: '4.3.6.RELEASE'
+compile group: 'org.springframework', name: 'spring-core', version: '4.3.6.RELEASE'
+
 	    
     testCompile group: 'junit', name: 'junit', version: '4.+'
 	testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
