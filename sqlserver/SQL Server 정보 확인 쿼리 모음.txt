@@ -1,0 +1,12 @@
+1. PK가 없는 테이블 검색
+-- 데이터베이스 명 수정 필요
+USE Database
+GO
+
+SELECT SCHEMA_NAME(Schema_id) AS SchemaName, name AS TableName, type, is_ms_shipped
+FROM sys.tables AS T
+WHERE OBJECTPROPERTY(object_id, 'TableHasPrimaryKey') = 0
+	AND type = 'U'
+	AND is_ms_shipped = 0
+ORDER BY SchemaName, TableName
+GO
