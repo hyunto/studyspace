@@ -25,12 +25,12 @@
 > 10. 비교 표현을 위한 테스트 매처 라이브러리(Test Macher Library)인 **Hamcrest** 도입
 > 11. 파라미터를 이용한 테스트
 > ```java
-@RunWith(Parameterized.class)
-@Parameters
-public static Collection data() {
-	...
-}
-```
+> @RunWith(Parameterized.class)
+> @Parameters
+> public static Collection data() {
+>     ...
+> }
+> ```
 
 ---
 
