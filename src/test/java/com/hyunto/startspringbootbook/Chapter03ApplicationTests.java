@@ -1,7 +1,9 @@
 package com.hyunto.startspringbootbook;
 
 import com.hyunto.startspringbootbook.domain.Board;
+import com.hyunto.startspringbootbook.domain.QBoard;
 import com.hyunto.startspringbootbook.persistence.BoardRepository;
+import com.querydsl.core.BooleanBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -92,6 +95,73 @@ public class Chapter03ApplicationTests {
         List<Board> list = results.getContent();
 
 	    list.forEach(board -> System.out.println(board));
+    }
+
+    @Test
+    public void testFindByTitle_Using_QueryAnnotation() {
+	    boardRepository.findByTitle("17")
+                .forEach(board -> System.out.println(board));
+    }
+
+    @Test
+    public void testFindByContent_Using_QueryAnnotation() {
+	    boardRepository.findByContent("119")
+                .forEach(board -> System.out.println(board));
+    }
+
+    @Test
+    public void testFindByWriter2() {
+	    boardRepository.findByWriter2("user07")
+                .forEach(board -> System.out.println(board));
+    }
+
+    @Test
+    public void testFindByTitle2() {
+	    boardRepository.findByTitle2("17")
+                .forEach(arr -> System.out.println(Arrays.toString(arr)));
+    }
+
+    @Test
+    public void testFindByTitle3() {
+        boardRepository.findByTitle3("19")
+                .forEach(arr -> System.out.println(Arrays.toString(arr)));
+    }
+
+    @Test
+    public void testByPaging() {
+	    Pageable pageable = new PageRequest(0, 10);
+	    boardRepository.findBypage(pageable)
+                .forEach(board -> System.out.println(board));
+    }
+
+    @Test
+    public void testPredicate() {
+	    String type = "t";
+	    String keyword = "19";
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        QBoard board = QBoard.board;
+
+        if (type.equals("t")) {
+            builder.and(board.title.like("%" + keyword + "%"));
+        }
+
+        // bno > 0
+        builder.and(board.bno.gt(0L));
+
+        Pageable pageable = new PageRequest(0, 10);
+
+        Page<Board> result = boardRepository.findAll(builder, pageable);
+
+        System.out.println("PAGE SIZE : " + result.getSize());
+        System.out.println("TOTAL PAGES : " + result.getTotalPages());
+        System.out.println("TOTAL COUNT : " + result.getTotalElements());
+        System.out.println("NEXT : " + result.nextPageable());
+
+        List<Board> list = result.getContent();
+
+        list.forEach(board1 -> System.out.println(board1));
     }
 
 }
