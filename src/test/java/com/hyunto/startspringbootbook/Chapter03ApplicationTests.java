@@ -7,6 +7,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collection;
@@ -66,8 +69,20 @@ public class Chapter03ApplicationTests {
 
 	@Test
 	public void testFindByBnoGreaterThanOrderByBnoDesc() {
-		boardRepository.findByBnoGreaterThanOrderByBnoDesc(190L)
-				.forEach(board -> System.out.println(board));
+		Pageable paging = new PageRequest(0, 10);
+
+		Collection<Board> results = boardRepository.findByBnoGreaterThanOrderByBnoDesc(0L, paging);
+
+		results.forEach(board -> System.out.println(board));
 	}
+
+	@Test
+    public void testBnoPagingSort() {
+	    Pageable paging = new PageRequest(0, 10, Sort.Direction.ASC, "bno");
+
+	    Collection<Board> results = boardRepository.findByBnoGreaterThan(0L, paging);
+
+	    results.forEach(board -> System.out.println(board));
+    }
 
 }
