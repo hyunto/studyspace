@@ -1,6 +1,7 @@
 package com.hyunto.startspringbootbook.persistence;
 
 import com.hyunto.startspringbootbook.domain.Board;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
@@ -21,6 +22,6 @@ public interface BoardRepository extends CrudRepository<Board, Long> {
 
 	public List<Board> findByBnoGreaterThanOrderByBnoDesc(Long id, Pageable paging);
 
-	public List<Board> findByBnoGreaterThan(Long id, Pageable paging);
+	public Page<Board> findByBnoGreaterThan(Long id, Pageable paging);
 
 }

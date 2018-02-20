@@ -7,12 +7,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collection;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -80,9 +82,16 @@ public class Chapter03ApplicationTests {
     public void testBnoPagingSort() {
 	    Pageable paging = new PageRequest(0, 10, Sort.Direction.ASC, "bno");
 
-	    Collection<Board> results = boardRepository.findByBnoGreaterThan(0L, paging);
+	    Page<Board> results = boardRepository.findByBnoGreaterThan(0L, paging);
 
-	    results.forEach(board -> System.out.println(board));
+        System.out.println("PAGE SIZE : " + results.getSize());
+        System.out.println("TOTAL PAGES : " + results.getTotalPages());
+        System.out.println("TOTAL COUNT : " + results.getTotalElements());
+        System.out.println("NEXT : " + results.nextPageable());
+
+        List<Board> list = results.getContent();
+
+	    list.forEach(board -> System.out.println(board));
     }
 
 }
