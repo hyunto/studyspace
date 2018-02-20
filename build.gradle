@@ -46,6 +46,7 @@ dependencies {
 
 /*
  * Querydsl Settings
+ * Reference : http://netframework.tistory.com/entry/gradle-%EC%A0%95%EB%A6%AC-queryDSL-code-generate-v-4x
  */
 sourceSets {
     main {
