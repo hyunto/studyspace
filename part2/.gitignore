@@ -23,6 +23,3 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-
-### Generated Dynamically for Query DSL ###
-part1/src/main/generated
