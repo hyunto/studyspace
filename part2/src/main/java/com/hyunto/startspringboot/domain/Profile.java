@@ -9,10 +9,10 @@ import javax.persistence.*;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "member")
 @Entity
 @Table(name = "tbl_profile")
-@EqualsAndHashCode(of = "fno")
+@EqualsAndHashCode(of = "fname")
 public class Profile {
 
     @Id
@@ -22,5 +22,8 @@ public class Profile {
     private String fname;
 
     private boolean current;
+
+    @ManyToOne
+    private Member member;
 
 }
