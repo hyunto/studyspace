@@ -116,4 +116,11 @@ public class PDSBoardTests {
         pdsBoardRepository.saveAll(list);
     }
 
+    @Test
+    public void viewSummary() {
+        pdsBoardRepository.getSummary().forEach(arr ->
+            log.info(Arrays.toString(arr))
+        );
+    }
+
 }
