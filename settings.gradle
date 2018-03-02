@@ -19,3 +19,4 @@ rootProject.name = 'start-spring-boot-book'
 
 include 'part1'
 include 'part2'
+include 'part2-thymeleaf'
