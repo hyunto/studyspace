@@ -26,3 +26,4 @@ nbdist/
 
 ### Generated Dynamically for Query DSL ###
 part1/src/main/generated
+part3/src/main/generated

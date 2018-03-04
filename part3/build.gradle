@@ -1,6 +1,7 @@
 buildscript {
 	ext {
 		springBootVersion = '2.0.0.RELEASE'
+		querydslVersion = '4.1.4'
 	}
 	repositories {
 		mavenCentral()
@@ -35,4 +36,44 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-layout-dialect
 	compile group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '2.3.0'
+
+	compile("com.querydsl:querydsl-jpa:${querydslVersion}")
+	compile("com.querydsl:querydsl-apt:${querydslVersion}")
+//	compile("com.querydsl:querydsl-core:${querydslVersion}")
+}
+
+/*
+ * Querydsl Settings
+ * Reference : http://netframework.tistory.com/entry/gradle-%EC%A0%95%EB%A6%AC-queryDSL-code-generate-v-4x
+ */
+sourceSets {
+	main {
+		java {
+			srcDirs 'src/main/java', 'src/main/generated'
+		}
+	}
+}
+
+task generateQueryDSL(type: JavaCompile, group: 'build', description: "Generates the QueryDSL query types") {
+	file(new File(projectDir, "/src/main/generated")).deleteDir()
+	file(new File(projectDir, "/src/main/generated")).mkdirs()
+
+	source = sourceSets.main.java
+	classpath = configurations.compile + configurations.compileOnly
+
+	options.compilerArgs = [
+			"-proc:only",
+			"-processor",
+			"com.querydsl.apt.jpa.JPAAnnotationProcessor"
+	]
+
+	destinationDir = file('src/main/generated')
+}
+
+compileJava {
+	dependsOn generateQueryDSL
+}
+
+clean.doLast {
+	file(new File(projectDir, "/src/main/generate")).deleteDir()
 }
