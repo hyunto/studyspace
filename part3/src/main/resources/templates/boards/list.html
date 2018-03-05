@@ -92,17 +92,28 @@
                formObj.find("[name='page']").val(1);
                formObj.submit();
             });
+
+            $(".boardLink").click(function(e) {
+                e.preventDefault();
+
+                var boardNo = $(this).attr("href");
+
+                formObj.attr("action", [[@{'/boards/view'}]]);
+                formObj.append("<input type='hidden' name='bno' value='" + boardNo + "'>");
+
+                formObj.submit();
+            });
+
+            $(window).load(function() {
+                var msg = [[${msg}]];
+
+                if (msg === "success") {
+                    alert("정상적으로 처리되었습니다.")
+                }
+
+                var stateObj = { msg: ""};
+            })
         });
-
-        $(window).load(function() {
-            var msg = [[${msg}]];
-
-            if (msg === "success") {
-                alert("정상적으로 처리되었습니다.")
-            }
-
-            var stateObj = { msg: ""};
-        })
 	</script>
 </th:block>
 
