@@ -41,6 +41,7 @@ public class PageMaker<T> {
 
 	private void calcPage() {
 		int tempEndNum = (int)(Math.ceil(this.currentPageNum/10.0) * 10);
+		log.info("tempEndNum : " + tempEndNum);
 
 		int startNum = tempEndNum - 9;
 
