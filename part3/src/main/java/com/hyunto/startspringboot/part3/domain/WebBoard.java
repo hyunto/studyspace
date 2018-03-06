@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,5 +34,8 @@ public class WebBoard {
 
 	@UpdateTimestamp
 	private Timestamp updatedate;
+
+	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
+	private List<WebReply> replies;
 
 }
