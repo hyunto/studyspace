@@ -64,4 +64,51 @@ public class WebBoardController {
         });
     }
 
+    @GetMapping("/modify")
+    public void modify(Long bno, @ModelAttribute("pageVO") PageVO vo, Model model) {
+	    log.info("MODFIY BNO : " + bno);
+
+	    webBoardRepository.findById(bno).ifPresent(webBoard -> {
+	        model.addAttribute("vo", webBoard);
+        });
+    }
+
+    @PostMapping("/delete")
+    public String delete(Long bno, PageVO vo, RedirectAttributes redirectAttributes) {
+	    log.info("DELETE BNO : " + bno);
+
+	    webBoardRepository.deleteById(bno);
+
+	    redirectAttributes.addFlashAttribute("msg", "success");
+
+	    redirectAttributes.addAttribute("page", vo.getPage());
+	    redirectAttributes.addAttribute("size", vo.getSize());
+	    redirectAttributes.addAttribute("type", vo.getType());
+	    redirectAttributes.addAttribute("keyword", vo.getKeyword());
+
+	    return "redirect:/boards/list";
+    }
+
+    @PostMapping("modify")
+    public String modifyPost(WebBoard board, PageVO vo, RedirectAttributes redirectAttributes) {
+	    log.info("MODIFY Webboard : " + board);
+
+	    webBoardRepository.findById(board.getBno()).ifPresent(webBoard -> {
+	        webBoard.setTitle(board.getTitle());
+	        webBoard.setContent(board.getContent());
+
+	        webBoardRepository.save(webBoard);
+
+	        redirectAttributes.addFlashAttribute("msg", "success");
+	        redirectAttributes.addAttribute("bno", webBoard.getBno());
+        });
+
+        redirectAttributes.addAttribute("page", vo.getPage());
+        redirectAttributes.addAttribute("size", vo.getSize());
+        redirectAttributes.addAttribute("type", vo.getType());
+        redirectAttributes.addAttribute("keyword", vo.getKeyword());
+
+        return "redirect:/boards/list";
+    }
+
 }
