@@ -20,10 +20,27 @@ var replyManager = (function() {
 
     var update = function (obj, callback) {
         console.log("update.....");
+
+        $.ajax({
+            type: 'put',
+            url: '/replies/' + obj.bno,
+            data: JSON.stringify(obj),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: callback
+        })
     };
 
     var remove = function (obj, callback) {
-        console.log("remove.....")
+        console.log("remove.....");
+
+        $.ajax({
+            type: 'delete',
+            url: '/replies/' + obj.bno + '/' + obj.rno,
+            dataType: 'json',
+            contentType: 'application/json',
+            success: callback
+        });
     };
 
     return {
