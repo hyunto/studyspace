@@ -1,6 +1,7 @@
 package com.hyunto.startspringboot.part3.controller;
 
 import com.hyunto.startspringboot.part3.domain.WebBoard;
+import com.hyunto.startspringboot.part3.persistence.CustomCrudRepository;
 import com.hyunto.startspringboot.part3.persistence.WebBoardRepository;
 import com.hyunto.startspringboot.part3.vo.PageMaker;
 import com.hyunto.startspringboot.part3.vo.PageVO;
@@ -24,18 +25,22 @@ public class WebBoardController {
     @Autowired
     private WebBoardRepository webBoardRepository;
 
+    @Autowired
+    private CustomCrudRepository customCrudRepository;
+
 	@GetMapping("/list")
 	public void list(@ModelAttribute("pageVO") PageVO vo, Model model) {
         Pageable page = vo.makePageable(0, "bno");
 
-        Page<WebBoard> result = webBoardRepository.findAll(webBoardRepository.makePredicate(vo.getType(), vo.getKeyword()), page);
+//        Page<WebBoard> result = webBoardRepository.findAll(webBoardRepository.makePredicate(vo.getType(), vo.getKeyword()), page);
+        Page<Object[]> result = customCrudRepository.getCustomPage(vo.getType(), vo.getKeyword(), page);
 
         log.info("" + page);
         log.info("" + result);
 
         log.info("TOTAL PAGE NUMBER: " + result.getTotalPages());
 
-        model.addAttribute("result", new PageMaker(result));
+        model.addAttribute("result", new PageMaker<>(result));
 	}
 
 	@GetMapping("/register")
