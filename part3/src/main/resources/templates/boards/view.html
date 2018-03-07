@@ -121,6 +121,7 @@
 					+ "-" + date.getDate();
 			}
 
+			// view modal
 			var mode;
 
 			$("#addReplyBtn").on("click", function() {
@@ -129,6 +130,31 @@
 
 				mode = "ADD";
 			})
+
+			var bno = [[${vo.bno}]];
+
+			var replyTextObj = $("input[name='replyText']");
+			var replyerObj = $("input[name='replyer']");
+
+			$("#modalBtn").click(function() {
+				if (mode == "ADD") {
+					var replyText = replyTextObj.val();
+					var replyer = replyerObj.val();
+
+					var obj = {replyText: replyText, replyer: replyer, bno: bno};
+
+					console.log(obj);
+
+					replyManager.add(obj, function (list) {
+						printList(list);
+						alert("새로운 댓글이 추가되었습니다.");
+
+						$("#myModal").modal("hide");
+						replyerObj.val("");
+						replyerObj.val("");
+					})
+				}
+			});
 
 		});
 	</script>
