@@ -21,7 +21,11 @@ public class HyuntoSecurityUser extends User {
 	private Member member;
 
 	public HyuntoSecurityUser(Member member) {
-		super(member.getUid(), "{noop}" + member.getUpw(), makeGrantedAuthority(member.getRoles()));
+		// Before password encoder
+//		super(member.getUid(), "{noop}" + member.getUpw(), makeGrantedAuthority(member.getRoles()));
+
+		// After password encoder
+		super(member.getUid(), member.getUpw(), makeGrantedAuthority(member.getRoles()));
 
 		this.member = member;
 	}
