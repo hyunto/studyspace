@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "tbl_webreplies")
 @EqualsAndHashCode(of = "rno")
-@ToString
+@ToString(exclude = {"board"})
 public class WebReply {
 
 	@Id

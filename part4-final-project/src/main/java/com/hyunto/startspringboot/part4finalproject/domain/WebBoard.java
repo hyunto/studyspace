@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "tbl_webboards")
 @EqualsAndHashCode(of = "bno")
-@ToString
+@ToString(exclude = {"replies"})
 public class WebBoard {
 
 	@Id
