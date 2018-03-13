@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
                 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	            xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
                 layout:decorate="~{layout/layout1}">
 
 <div layout:fragment="content">
@@ -8,7 +9,7 @@
 	<div class="panel-heading">Modify Page</div>
 	<div class="panel-body">
 
-		<form id="f1">
+		<form id="f1" th:action="${/}">
 
 			<div class="form-group">
 				<label>BNO</label>

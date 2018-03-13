@@ -9,6 +9,7 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,6 +70,7 @@ public class WebBoardController {
         });
     }
 
+    @Secured(value = {"ROLE_BASIC", "ROLE_MANAGER", "ROLE_ADMIN"})
     @GetMapping("/modify")
     public void modify(Long bno, @ModelAttribute("pageVO") PageVO vo, Model model) {
 	    log.info("MODFIY BNO : " + bno);
@@ -78,6 +80,7 @@ public class WebBoardController {
         });
     }
 
+    @Secured(value = {"ROLE_BASIC", "ROLE_MANAGER", "ROLE_ADMIN"})
     @PostMapping("/delete")
     public String delete(Long bno, PageVO vo, RedirectAttributes redirectAttributes) {
 	    log.info("DELETE BNO : " + bno);
@@ -94,6 +97,7 @@ public class WebBoardController {
 	    return "redirect:/boards/list";
     }
 
+    @Secured(value = {"ROLE_BASIC", "ROLE_MANAGER", "ROLE_ADMIN"})
     @PostMapping("modify")
     public String modifyPost(WebBoard board, PageVO vo, RedirectAttributes redirectAttributes) {
 	    log.info("MODIFY Webboard : " + board);
