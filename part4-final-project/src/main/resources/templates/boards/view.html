@@ -145,7 +145,7 @@
 			$("#addReplyBtn").on("click", function() {
                 if (uid == null) {
                     if (confirm("로그인 할까요?")) {
-                        self.location = [[@{/login}]];
+                        self.location = [[@{/login}]] + "?dest=" + encodeURIComponent(self.location);
                     }
                     return;
                 };
@@ -155,9 +155,9 @@
 				$("#myModal").modal("show");
 				$(".modal-title").text("Add Reply");
 
-				mode = "ADD";
-
 				$("#delModalBtn").hide();
+
+				mode = "ADD";
 			});
 
 			$("#modalBtn").click(function() {
