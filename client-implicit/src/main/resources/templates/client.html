@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8"/>
+    <title>Facebook - client side integration</title>
+</head>
+<body>
+	Press the following button to start the implicit flow.
+	<button id="authorize" type="button">Authorize</button>
+	<!--<fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>-->
+
+	<div id="box">
+
+	</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	$(document).ready(function() {
+		$('#authorize').click(makeRequest);
+	});
+
+	/*
+		로그인 플로우 사용
+		참고 : https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/
+	*/
+	function makeRequest() {
+		var auth_endpoint = "https://www.facebook.com/v3.2/dialog/oauth",
+		    response_type = "token",
+		    client_id = "2489840157724826",
+		    redirect_url = "https://localhost:8443/callback",
+		    scope = "public_profile user_friends",
+			state = "{st=state123abc,ds=123456789}";
+		var request_endpoint = auth_endpoint + "?" +
+				"response_type=" + response_type + "&" +
+				"client_id=" + client_id + "&" +
+				"redirect_uri=" + redirect_url + "&" +
+				// "state=" + state + "&" +
+				"scope=" + encodeURI(scope);
+		window.location.href = request_endpoint;
+	};
+
+
+	/*
+		페이스북 SDK 사용
+	*/
+	// window.fbAsyncInit = function() {
+	// 	FB.init({
+	// 		appId      : '2489840157724826',
+	// 		cookie     : true,
+	// 		xfbml      : true,
+	// 		version    : 'v3.2'
+	// 	});
+	//
+	// 	FB.AppEvents.logPageView();
+	//
+	// };
+	//
+	// (function(d, s, id){
+	// 	var js, fjs = d.getElementsByTagName(s)[0];
+	// 	if (d.getElementById(id)) {return;}
+	// 	js = d.createElement(s); js.id = id;
+	// 	js.src = "https://connect.facebook.net/en_US/sdk.js";
+	// 	fjs.parentNode.insertBefore(js, fjs);
+	// }(document, 'script', 'facebook-jssdk'));
+	//
+	// function checkLoginState() {
+	// 	FB.getLoginStatus(function(response) {
+	// 		statusChangeCallback(response);
+	// 	});
+	// }
+	//
+	// function statusChangeCallback(response) {
+	// 	console.dir(response);
+	//
+	// 	if (response.status === 'connected') {
+	// 		alert('Login Success!!!');
+	// 	} else if (response.status === 'not-authorized') {
+	// 		alert('Login Failed - Not Authorized');
+	// 	} else {
+	// 		alert('Login Failed - Unknown');
+	// 	}
+	// }
+
+	/*]]>*/
+</script>
+
+</body>
+</html>
