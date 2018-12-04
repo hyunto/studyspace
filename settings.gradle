@@ -11,3 +11,4 @@ rootProject.name = 'oauth2.0-cookbook'
 
 include 'simplemvc'
 include 'client-implicit'
+include 'social-authcode'
