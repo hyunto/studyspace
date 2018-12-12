@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Google Plus Integration</title>
+</head>
+<body>
+
+	<h3>
+		Hello, <span th:text="${name}">User</span>!
+	</h3>
+	<th:block th:text="${repository}"></th:block>
+	<hr/>
+	<a href="/logout">Logout</a>
+
+</body>
+</html>

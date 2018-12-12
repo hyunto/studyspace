@@ -173,3 +173,4 @@ gradle-app.setting
 client-implicit/src/main/resources/application.properties
 social-authcode/src/main/resources/application.properties
 social-linkd-in/src/main/resources/application.properties
+social-google1/src/main/resources/application.properties
