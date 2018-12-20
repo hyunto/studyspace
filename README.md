@@ -9,4 +9,6 @@
 2. OAuth 2.0 프로바이더 구현
     - auth-code-server : Authorization Code Grant Provider
     - implicit-server : Implicit Grant Provider
-    - password-server : Resource Owner Password Credentials Provider
+    - password-server : Resource Owner Password Credentials Grant Provider
+    - client-credentials-server : Client Credentials Grant Provider
+    - refresh-server : Refresh Token Grant Provider
