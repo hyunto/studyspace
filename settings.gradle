@@ -9,11 +9,14 @@
 
 rootProject.name = 'oauth2.0-cookbook'
 
+//Chapter 01
 include 'simplemvc'
 include 'client-implicit'
 include 'social-authcode'
 include 'social-linkd-in'
 include 'social-google1'
+
+//Chapter 02
 include 'auth-code-server'
 include 'implicit-server'
 include 'password-server'
@@ -22,3 +25,5 @@ include 'refresh-server'
 include 'rdbms-server'
 include 'redis-server'
 include 'oauth2provider'
+include 'authorization-server'
+include 'resource-server'
