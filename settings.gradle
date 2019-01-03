@@ -27,3 +27,6 @@ include 'redis-server'
 include 'oauth2provider'
 include 'authorization-server'
 include 'resource-server'
+
+//Chapter 03
+include 'client-authorization-code'
