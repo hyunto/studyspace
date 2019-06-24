@@ -26,4 +26,20 @@ public class BasicControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(content().string(equalTo("Hello World")));
 	}
+
+	@Test
+	public void welcomeWithObject() throws Exception {
+		mvc.perform(MockMvcRequestBuilders.get("/welcome-with-object")
+			.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("Hello World")));
+	}
+
+	@Test
+	public void welcomWithParameter() throws Exception {
+		mvc.perform(MockMvcRequestBuilders.get("/welcom-with-parameter/name/Buddy")
+			.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("Hello World, Buddy")));
+	}
 }

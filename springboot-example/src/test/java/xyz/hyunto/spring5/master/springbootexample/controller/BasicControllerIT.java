@@ -26,13 +26,26 @@ public class BasicControllerIT {
 	private int port;
 	private TestRestTemplate template = new TestRestTemplate();
 
+	private String createURL(String uri) {
+		return LOCAL_HOST + ":" + port + uri;
+	}
+
 	@Test
 	public void welcome() throws Exception {
 		ResponseEntity<String> response = template.getForEntity(this.createURL("/welcome"), String.class);
 		assertThat(response.getBody(), equalTo("Hello World"));
 	}
 
-	private String createURL(String uri) {
-		return LOCAL_HOST + ":" + port + uri;
+	@Test
+	public void welcomeWithObject() throws Exception {
+		ResponseEntity<String> response = template.getForEntity(createURL("/welcome-with-object"), String.class);
+		assertThat(response.getBody(), containsString("Hello World"));
 	}
+
+	@Test
+	public void welcomWithParameter() throws Exception {
+		ResponseEntity<String> response = template.getForEntity(createURL("/welcome-with-parameter/name/Buddy"), String.class);
+		assertThat(response.getBody(), containsString("Hello World, Buddy"));
+	}
+
 }
