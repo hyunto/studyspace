@@ -1,6 +1,8 @@
 package xyz.hyunto.spring5.master.todo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -23,13 +25,19 @@ public class TodoController {
     }
 
     @GetMapping("/users/{name}/todos/{id}")
-    public Todo retrieveTodo(@PathVariable String name,
+    public Resource<Todo> retrieveTodo(@PathVariable String name,
                              @PathVariable int id) {
         Todo todo = todoService.retrieveTodo(id);
         if (todo == null) {
             throw new TodoNotFoundException("Todo Not Foud");
         }
-        return todo;
+
+        Resource<Todo> todoResource = new Resource<>(todo);
+        ControllerLinkBuilder linkTo = ControllerLinkBuilder.linkTo(
+                ControllerLinkBuilder.methodOn(this.getClass()).retrieveTodos(name));
+        todoResource.add(linkTo.withRel("parent"));
+
+        return todoResource;
     }
 
     @PostMapping("/users/{name}/todos")
@@ -50,7 +58,7 @@ public class TodoController {
     /* 06-1. 예외 처리 */
     @GetMapping("/users/dummy-service")
     public Todo errorService() {
-        throw new RuntimeException("Some Exception Occured");
+        throw new RuntimeException("Some Exception Occurred");
     }
 
 }
