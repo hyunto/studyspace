@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import xyz.hyunto.spring5.master.todo.exception.TodoNotFoundException;
 import xyz.hyunto.spring5.master.todo.model.Todo;
 import xyz.hyunto.spring5.master.todo.service.TodoService;
 
@@ -24,7 +25,11 @@ public class TodoController {
     @GetMapping("/users/{name}/todos/{id}")
     public Todo retrieveTodo(@PathVariable String name,
                              @PathVariable int id) {
-        return todoService.retrieveTodo(id);
+        Todo todo = todoService.retrieveTodo(id);
+        if (todo == null) {
+            throw new TodoNotFoundException("Todo Not Foud");
+        }
+        return todo;
     }
 
     @PostMapping("/users/{name}/todos")
@@ -40,6 +45,12 @@ public class TodoController {
                 .buildAndExpand(createdTodo.getId())
                 .toUri();
         return ResponseEntity.created(location).build();
+    }
+
+    /* 06-1. 예외 처리 */
+    @GetMapping("/users/dummy-service")
+    public Todo errorService() {
+        throw new RuntimeException("Some Exception Occured");
     }
 
 }
