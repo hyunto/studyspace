@@ -1,5 +1,6 @@
 package xyz.hyunto.spring5.master.todo.controller;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
@@ -20,6 +21,13 @@ public class TodoController {
     @Autowired
     private TodoService todoService;
 
+    @ApiOperation(
+        value = "이름으로 유저의 모든 todos 검색",
+        notes = "일치하는 todos 리스트가 반환된다. 현재 페이징은 지원되지 않는다",
+        response = Todo.class,
+        responseContainer = "List",
+        produces = "application/json"
+    )
     @GetMapping("/users/{name}/todos")
     public List<Todo> retrieveTodos(@PathVariable String name) {
         return todoService.retrieveTodos(name);
