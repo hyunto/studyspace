@@ -10,6 +10,7 @@ import xyz.hyunto.spring5.master.todo.exception.TodoNotFoundException;
 import xyz.hyunto.spring5.master.todo.model.Todo;
 import xyz.hyunto.spring5.master.todo.service.TodoService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -41,8 +42,8 @@ public class TodoController {
     }
 
     @PostMapping("/users/{name}/todos")
-    ResponseEntity<?> add(@PathVariable String name,
-                          @RequestBody Todo todo) {
+    public ResponseEntity<?> add(@PathVariable String name,
+                          @Valid @RequestBody Todo todo) {
         Todo createdTodo = todoService.addTodo(name, todo.getDesc(), todo.getTargetDate(), todo.isDone());
         if (createdTodo == null) {
             return ResponseEntity.noContent().build();

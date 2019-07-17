@@ -28,6 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TodoController.class)
 public class TodoControllerTest {
 
+    private static final int CREATED_TODO_ID = 4;
+
     @Autowired
     private MockMvc mvc;
 
@@ -76,7 +78,7 @@ public class TodoControllerTest {
     @Test
     public void createTodo() throws Exception {
         // given
-        Todo mockTodo = new Todo(4, "Jack", "Learn Spring MVC", new Date(), false);
+        Todo mockTodo = new Todo(CREATED_TODO_ID, "Jack", "Learn Spring MVC", new Date(), false);
         String todo = "{\"user\":\"Jack\",\"desc\":\"Learn Spring MVC\",\"done\":false}";
         when(service.addTodo(anyString(), anyString(), isNull(), anyBoolean())).thenReturn(mockTodo);
 
@@ -86,5 +88,20 @@ public class TodoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("location", containsString("/users/Jack/todos/4")));
+    }
+
+    @Test
+    public void createTodo_withValidationError() throws Exception {
+        // given
+        Todo mockTodo = new Todo(CREATED_TODO_ID, "Jack", "Learn Spring MVC", new Date(), false);
+        String todo = "{\"user\":\"Jack\",\"desc\":\"Learn\",\"done\":false}";
+        when(service.addTodo(anyString(), anyString(), isNull(), anyBoolean())).thenReturn(mockTodo);
+
+        // when
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/users/Jack/todos")
+                .content(todo)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andReturn();
     }
 }

@@ -3,6 +3,8 @@ package xyz.hyunto.spring5.master.todo.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Getter
@@ -10,8 +12,10 @@ import java.util.Date;
 public class Todo {
 
     private int id;
+    @NotNull
     private String user;
 
+    @Size(min = 9, message = "Enter at least 10 Characters.")
     private String desc;
 
     private Date targetDate;
