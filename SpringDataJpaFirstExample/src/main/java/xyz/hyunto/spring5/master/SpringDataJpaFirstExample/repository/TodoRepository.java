@@ -9,8 +9,8 @@ public interface TodoRepository extends CrudRepository<Todo, Long> {
 
     List<Todo> findByTitleAndDescription(String title, String description);
     List<Todo> findDistinctTodoByTitleOrDescription(String title, String description);
-    List<Todo> findByTitleIgnoreCase(String title, String description);
-    List<Todo> findByTitleOrOrderByIdDesc(String lastName);
-    List<Todo> findByIsDoneTrue(String lastName);
+    List<Todo> findByTitleIgnoreCase(String title);
+    List<Todo> findByTitleOrderByIdDesc(String title);
+    List<Todo> findByIsDoneTrue();
 
 }
