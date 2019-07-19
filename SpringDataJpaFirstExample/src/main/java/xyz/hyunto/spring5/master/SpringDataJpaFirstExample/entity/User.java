@@ -10,10 +10,12 @@ import javax.persistence.OneToMany;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor
 @Getter
+@ToString(exclude = "todos")
 public class User {
 
 	@Id
