@@ -11,3 +11,4 @@ rootProject.name = 'spring-5.0-master'
 
 include 'springboot-example'
 include 'todo'
+include 'SpringDataJpaFirstExample'
