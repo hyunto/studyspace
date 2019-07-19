@@ -5,14 +5,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import xyz.hyunto.spring5.master.SpringDataJpaFirstExample.entity.User;
 
 import java.util.List;
 
+@RepositoryRestResource(collectionResourceRel = "users", path = "users")
 public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
-    List<User> findByName(String name);
-    List<User> findByName(String name, Sort sort);
+//    List<User> findByName(String name);
+//    List<User> findByName(String name, Sort sort);
     List<User> findByName(String name, Pageable pageable);
     Long countByName(String name);
     Long deleteByName(String name);
