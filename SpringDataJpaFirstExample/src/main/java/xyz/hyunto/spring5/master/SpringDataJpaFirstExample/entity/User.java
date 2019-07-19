@@ -2,11 +2,7 @@ package xyz.hyunto.spring5.master.SpringDataJpaFirstExample.entity;
 
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +12,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @ToString(exclude = "todos")
+@NamedQuery(
+		name = "User.findUsersWithNameUsingNamedQuery",
+		query = "select u from User u where u.name = ?1"
+)
 public class User {
 
 	@Id
