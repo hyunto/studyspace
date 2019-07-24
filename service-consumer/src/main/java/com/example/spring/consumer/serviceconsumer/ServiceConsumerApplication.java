@@ -2,9 +2,11 @@ package com.example.spring.consumer.serviceconsumer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @EnableFeignClients("com.example.spring.consumer.serviceconsumer")
+@EnableDiscoveryClient
 @SpringBootApplication
 public class ServiceConsumerApplication {
 
