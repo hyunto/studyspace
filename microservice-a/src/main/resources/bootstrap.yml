@@ -3,6 +3,6 @@ spring:
     name: microservice-a
   cloud:
     config:
-      uri: http://localhost:30012
+      uri: http://localhost:30010
   profiles:
     active: default
