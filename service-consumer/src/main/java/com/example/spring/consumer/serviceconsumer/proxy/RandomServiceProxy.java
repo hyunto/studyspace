@@ -6,10 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
-@FeignClient(name = "microservice-a")
+/* Before */
+//@FeignClient(name = "microservice-a")
+/* After */
+@FeignClient(name = "zuul-api-gateway")
 @RibbonClient(name = "microservice-a")
 public interface RandomServiceProxy {
 
-    @GetMapping("/random")
+    /* Before */
+//    @GetMapping("/random")
+    /* After */
+    @GetMapping("/microservice-a/random")
     public List<Integer> getRandomNumbers();
 }
