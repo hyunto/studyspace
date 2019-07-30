@@ -1,6 +1,8 @@
 package com.example.spring.consumer.serviceconsumer.controller;
 
 import com.example.spring.consumer.serviceconsumer.proxy.RandomServiceProxy;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.ribbon.proxy.annotation.Hystrix;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ public class NumberAdderController {
     @Autowired
     private RandomServiceProxy randomServiceProxy;
 
+    @HystrixCommand(fallbackMethod = "getDefaultResponse")
     @GetMapping("/add")
     public Long add() {
         long sum = 0;
@@ -39,4 +42,9 @@ public class NumberAdderController {
         log.warn("Returning {}", sum);
         return sum;
     }
+
+    private Long getDefaultResponse() {
+        return 10000L;
+    }
+
 }
