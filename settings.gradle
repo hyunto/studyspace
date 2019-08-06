@@ -19,3 +19,5 @@ include 'config-server'
 include 'eureka-server'
 include 'api-gateway'
 include 'zipkin-server'
+
+include 'spring-reactive'
