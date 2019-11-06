@@ -1,3 +1,5 @@
+---
+# Install nginx without tls
 - name: Configure webserver with nginx
   hosts: webservers
   become: True
@@ -14,4 +16,4 @@
     - name: copy index.html
       template: src=templates/index.html.j2 dest=/usr/share/nginx/html/index.html mode=0644
     - name: restart nginx
-      service: name=nginx state=restarted
+      service: name=nginx state=restarted                                                                                                                                                                                                                                                                                                                                                                                        
