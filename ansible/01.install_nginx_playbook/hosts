@@ -1,4 +1,37 @@
-[webservers]
+[vagrant]
 vagrant1 ansible_host=127.0.0.1 ansible_port=2222 ansible_python_interpreter=/usr/bin/python3
 vagrant2 ansible_host=127.0.0.1 ansible_port=2200 ansible_python_interpreter=/usr/bin/python3
 vagrant3 ansible_host=127.0.0.1 ansible_port=2201 ansible_python_interpreter=/usr/bin/python3
+
+
+
+[web]
+vagrant1
+
+[task]
+vagrant2
+
+[rabbitmq]
+vagrant3
+
+[database]
+vagrant3
+
+
+
+[django:children]
+web
+task
+
+
+
+[all:vars]
+ntp_server=ntp.ubuntu.com
+
+[vagrant:vars]
+db_primary_port=5432
+db_name=postgres
+db_user=admin
+db_password=P@ssw0rd
+rabbitmq_host=vagrant3
+rabbitmq_port=5672

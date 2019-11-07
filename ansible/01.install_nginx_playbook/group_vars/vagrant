@@ -1,0 +1,11 @@
+db:
+  user: admin
+  password: P@ssw0rd
+  name: postgres
+  primary:
+    host: vagrant3
+    port: 5432
+
+rabbitmq:
+  host: vagrant3
+  port: 5672
