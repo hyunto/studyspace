@@ -1,0 +1,13 @@
+---
+  - name: Get system information via ansible_facts
+    hosts: localhost
+    gather_facts: True
+    tasks:
+      - name: Print all facts
+        debug: var=ansible_facts
+      - name: Print OS
+        debug: var=ansible_distribution
+      - name: Print IPv4
+        debug: var=ansible_all_ipv4_addresses
+      - name: Print hostname
+        debug: var=ansible_hostname

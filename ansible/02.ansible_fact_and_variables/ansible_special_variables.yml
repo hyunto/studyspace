@@ -1,0 +1,9 @@
+---
+  - name: Test ansible special variables
+    hosts: localhost
+    gather_facts: False
+    tasks:
+      - name: Print inventory_hostname
+        debug: var=inventory_hostname
+      - name: Print all variables about this host
+        debug: var=hostvars[inventory_hostname]
