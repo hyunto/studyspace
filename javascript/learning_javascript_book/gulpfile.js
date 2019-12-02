@@ -1,18 +1,28 @@
-const gulp = require('gulp');
-const babel = require('gulp-babel');
+/* eslint-disable require-jsdoc */
+const {series, parallel} = require('gulp');
+const {src, dest} = require('gulp');
 const eslint = require('gulp-eslint');
+const babel = require('gulp-babel');
 
-gulp.task('default', function() {
-  // ESLint를 실행합니다.
-  gulp.src(['es6/**/*.js', 'public/es6/**/*.js'])
+function esLint() {
+  return src('es6/**/*.js', 'public/es6/**/*.js')
       .pipe(eslint())
       .pipe(eslint.format());
-  // 노드 소스
-  gulp.src('es6/**/*.js')
+}
+
+function nodeBabel() {
+  return src('es6/**/*.js')
       .pipe(babel())
-      .pipe(gulp.dest('dist'));
-  // 브라우저 소스
-  gulp.src('public/es6/**/*.js')
+      .pipe(dest('dist'));
+}
+
+function browserBabel() {
+  return src('public/es6/**/*.js')
       .pipe(babel())
-      .pipe(gulp.dest('public/dest'));
-});
+      .pipe(dest('public/dist'));
+}
+
+exports.default = series(
+    esLint,
+    parallel(nodeBabel, browserBabel),
+);
