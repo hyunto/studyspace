@@ -1,7 +1,7 @@
 <template>
   <div>
     ask
-    <div v-for="ask in asks">{{ ask }}</div>
+    <div v-for="ask in asks">{{ ask.title }}</div>
   </div>
 </template>
 
@@ -16,13 +16,8 @@ export default {
   },
   created() {
     fetchAskList()
-      .then((response) => {
-        console.log(response);
-        this.asks = response.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      })
+      .then(response => this.asks = response.data)
+      .catch(error => console.log(error));
   }
 }
 </script>
