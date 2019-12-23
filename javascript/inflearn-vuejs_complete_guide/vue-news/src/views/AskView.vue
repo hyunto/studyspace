@@ -1,23 +1,16 @@
 <template>
   <div>
     ask
-    <div v-for="ask in asks">{{ ask.title }}</div>
+    <div v-for="ask in this.$store.state.asks">{{ ask.title }}</div>
   </div>
 </template>
 
 <script>
-import { fetchAskList } from '../api/index';
+
 
 export default {
-  data() {
-    return {
-      asks: []
-    }
-  },
   created() {
-    fetchAskList()
-      .then(response => this.asks = response.data)
-      .catch(error => console.log(error));
+    this.$store.dispatch('FETCH_ASKS');
   }
 }
 </script>
