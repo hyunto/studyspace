@@ -2,6 +2,7 @@
   <div>
     <p>id: {{ item.id }}</p>
     <p>title: {{ item.title }}</p>
+    <div v-html="item.content"></div>
   </div>
 </template>
 
