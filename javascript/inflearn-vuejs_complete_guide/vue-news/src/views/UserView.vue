@@ -3,7 +3,7 @@
     <p>name : {{ userInfo.id }}</p>
     <p>karma : {{ userInfo.karma }}</p>
     <p>created : {{ userInfo.created }}</p>
-    <p>about : {{ userInfo.about }}</p>
+    <p>about : <span v-html="userInfo.about"></span></p>
   </div>
 </template>
 
