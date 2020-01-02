@@ -2,11 +2,9 @@
   <div>
     <user-profile>
       <div slot="username">{{ userInfo.id }}</div>
-      <template slot="time">{{ userInfo.created }}</template>
-      <div slot="karma">{{ userInfo.karma }}</div>
-      <template slot="about">
-        <span v-html="userInfo.about"></span>
-      </template>
+      <span slot="time">{{ 'Joined ' + userInfo.created }}, </span>
+      <span slot="karma">{{ userInfo.karma }}</span>
+      <span slot="about" v-html="userInfo.about"></span>
     </user-profile>
   </div>
 </template>

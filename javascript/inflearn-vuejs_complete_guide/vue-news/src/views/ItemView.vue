@@ -1,19 +1,22 @@
 <template>
   <div>
+    <!-- 사용자 정보 -->
     <section>
-      <!-- 사용자 정보 -->
       <user-profile :info="fetchedItem">
-        <div slot="username">{{ fetchedItem.user }}</div>
-        <template slot="time">{{ fetchedItem.time_ago }}</template>
+        <router-link slot="username" :to="`/user/${fetchedItem.user}`">{{ fetchedItem.user }}</router-link>
+        <template slot="time">{{ 'Posted ' + fetchedItem.time_ago }}</template>
       </user-profile>
     </section>
+
+    <!-- 타이틀 -->
     <section>
       <h2>
         {{ fetchedItem.title }}
       </h2>
     </section>
+    
+    <!-- 내용 -->
     <section>
-      <!-- 질문 댓글 -->
       <div v-html="fetchedItem.content"></div>
     </section>
   </div>
