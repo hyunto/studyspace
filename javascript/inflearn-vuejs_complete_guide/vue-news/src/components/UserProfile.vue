@@ -13,8 +13,13 @@
             <!-- 상위 컴포넌트에서 정의할 영역 -->
           </slot>
         </div>
+        <slot name="karma">
+          <!-- 상위 컴포넌트에서 정의할 영역 -->
+        </slot>
       </div>
-      <slot name="karma">
+    </div>
+    <div class="user-about">
+      <slot name="about">
         <!-- 상위 컴포넌트에서 정의할 영역 -->
       </slot>
     </div>
@@ -40,5 +45,8 @@ export default {
 }
 .time {
   font-size: 0.7rem;
+}
+.user-about {
+  padding: 1rem;
 }
 </style>
