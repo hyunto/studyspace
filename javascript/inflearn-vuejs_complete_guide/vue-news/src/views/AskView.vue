@@ -1,6 +1,6 @@
 <template>
   <div>
-    <list-item v-bind:items="fetchedAsks"></list-item>
+    <list-item :items="fetchedAsks"></list-item>
   </div>
 </template>
 
@@ -8,6 +8,7 @@
 // import { mapState } from 'vuex';
 import { mapGetters } from 'vuex';
 import ListItem from '../components/ListItem'
+import bus from '../utils/bus.js';
 
 export default {
   components: {
@@ -34,8 +35,12 @@ export default {
       'fetchedAsks'
     ])
   },
-  created() {
+  async created() {
+    bus.$emit('start:spinner');
+    await new Promise(resolve => setTimeout(resolve, 2000));
     this.$store.dispatch('FETCH_ASKS');
+    console.log('fetched');
+    bus.$emit('end:spinner');
   }
 }
 </script>
