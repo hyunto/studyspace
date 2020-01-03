@@ -1,24 +1,28 @@
 <template>
   <div>
-    <list-item :items="this.$store.state.jobs"></list-item>
+    <list-item :items="this.$store.state.list"></list-item>
   </div>
 </template>
 
 <script>
 import ListItem from '../components/ListItem';
-import bus from '../utils/bus.js';
+// import bus from '../utils/bus.js';
+import ListMixin from '../mixins/ListMixin';
 
 export default {
   components: {
     ListItem,
   },
-  async created() {
-    bus.$emit('start:spinner');
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    this.$store.dispatch('FETCH_JOBS');
-    console.log('fetched');
-    bus.$emit('end:spinner');
-  }
+  mixins: [
+    ListMixin
+  ],
+  // async created() {
+  //   bus.$emit('start:spinner');
+  //   await new Promise(resolve => setTimeout(resolve, 2000));
+  //   this.$store.dispatch('FETCH_LIST', this.$route.name);
+  //   console.log('fetched');
+  //   bus.$emit('end:spinner');
+  // }
 }
 </script>
 

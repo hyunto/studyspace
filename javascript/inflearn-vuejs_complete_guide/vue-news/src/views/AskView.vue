@@ -38,7 +38,7 @@ export default {
   async created() {
     bus.$emit('start:spinner');
     await new Promise(resolve => setTimeout(resolve, 2000));
-    this.$store.dispatch('FETCH_ASKS');
+    this.$store.dispatch('FETCH_LIST', this.$route.name);
     console.log('fetched');
     bus.$emit('end:spinner');
   }
