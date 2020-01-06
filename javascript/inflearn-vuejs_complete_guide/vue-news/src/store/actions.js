@@ -32,7 +32,7 @@ export default {
   //     })
   // },
   FETCH_USER({ commit }, name) {
-    fetchUserInfo(name)
+    return fetchUserInfo(name)
       .then(({ data }) => {
         commit('SET_USER', data);
       })
@@ -41,7 +41,7 @@ export default {
       })
   },
   FETCH_ASK_ITEM({ commit }, id) {
-    fetchAskItem(id)
+    return fetchAskItem(id)
       .then(({ data }) => {
         commit('SET_ASK_ITEM', data);
       })
@@ -50,7 +50,7 @@ export default {
       })
   },
   FETCH_LIST({ commit }, pageName) {
-    fetchList(pageName)
+    return fetchList(pageName)
       .then(({ data }) => commit('SET_LIST', data))
       .catch(error => console.log(error));
   }
