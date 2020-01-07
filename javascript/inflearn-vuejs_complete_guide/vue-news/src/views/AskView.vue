@@ -1,14 +1,16 @@
 <template>
   <div>
-    <list-item :items="fetchedAsks"></list-item>
+    <!-- <list-item :items="fetchedAsks"></list-item> -->
+    <list-item :items="this.$store.state.list"></list-item>
   </div>
 </template>
 
 <script>
 // import { mapState } from 'vuex';
-import { mapGetters } from 'vuex';
+// import { mapGetters } from 'vuex';
 import ListItem from '../components/ListItem'
-import bus from '../utils/bus.js';
+// import bus from '../utils/bus.js';
+import ListMixin from '../mixins/ListMixin';
 
 export default {
   components: {
@@ -31,17 +33,23 @@ export default {
     // })
 
     // #4: Getter와 Key 이름이 같은 경우 mapGetters 사용 방법
-    ...mapGetters([
-      'fetchedAsks'
-    ])
+    // ...mapGetters([
+      // 'fetchedAsks'
+    // ])
   },
-  async created() {
-    bus.$emit('start:spinner');
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    this.$store.dispatch('FETCH_LIST', this.$route.name);
-    console.log('fetched');
-    bus.$emit('end:spinner');
-  }
+  // async created() {
+  //   bus.$emit('start:spinner');
+  //   await new Promise(resolve => setTimeout(resolve, 2000));
+  //   this.$store.dispatch('FETCH_LIST', this.$route.name);
+  //   console.log('fetched');
+  //   bus.$emit('end:spinner');
+  // }
+  // mounted() {
+  //   bus.$emit('end:spinner');
+  // }
+  mixins: [
+    ListMixin
+  ],
 }
 </script>
 
