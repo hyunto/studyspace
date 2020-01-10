@@ -1,5 +1,11 @@
 <template>
-  <check-box :checked="checked"></check-box>
+  <div>
+    <!-- Before -->
+    <!-- <check-box :checked="checked"></check-box> -->
+
+    <!-- After -->
+    <check-box v-model="checked"></check-box>
+  </div>
 </template>
 
 <script>
@@ -11,7 +17,7 @@ export default {
   },
   data() {
     return {
-      checked: true
+      checked: false
     }
   }
 }
