@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configmap-test
+spec:
+  selector:
+    matchLabels:
+      app: configmap-test
+  template:
+    metadata:
+      labels:
+        app: configmap-test
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        env:
+        - name: MY_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: from-env-file-config
+              key: name
+        volumeMounts:
+          - name: configmap-volume
+            mountPath: /tmp
+          - 
+      volumes:
+        - name: configmap-dir-volume
+          configMap:
+            name: from-file-config-dir

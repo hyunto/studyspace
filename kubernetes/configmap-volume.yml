@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configmap-volume-test
+spec:
+  selector:
+    matchLabels:
+      app: configmap-volume-test
+  template:
+    metadata:
+      labels:
+        app: configmap-volume-test
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+          - name: nginx-config-volume
+            mountPath: /etc/nginx
+            readOnly: true
+        ports:
+        - containerPort: 8888
+      volumes:
+        - name: nginx-config-volume
+          configMap:
+            name: nginx-config-file
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+
+---
+# kubectl create configmap nginx-config-file --from-file=./nginx.conf
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config-file
+data:
+  nginx.conf: |
+    worker_processes  1;
+    events {
+        worker_connections  1024;
+    }
+    http { 
+        server {
+            listen       8888;
+            location / {
+                root   html;
+                index  index.html index.htm;
+            }
+        }
+    }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service-volume
+spec:
+  selector:
+    app: configmap-volume-test
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 8888
