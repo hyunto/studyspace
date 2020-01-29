@@ -9,25 +9,26 @@ fun main(args: Array<String>) {
 	val isImmortal = false
 
 	// 아우라
-	if (isBlessed && healthPoints > 50 || isImmortal) {
-		println("GREEN")
-	} else {
-		println("NONE")
-	}
+	val auraVisible = isBlessed && healthPoints > 50 || isImmortal
+	val auraColor = if(auraVisible) "GREEN" else "NONE"
+	println(auraColor)
 
-	if (healthPoints == 100) {
-		println(name + " 최상의 상태임!")
+	val healthStatus = if (healthPoints == 100) {
+		"최상의 상태임!"
 	} else if (healthPoints >= 90){
-		println(name + " 약간의 찰과상만 있음")
+		"약간의 찰과상만 있음"
 	} else if (healthPoints >= 75) {
 		if (isBlessed) {
-			println(name + " 경미한 상처가 있지만 빨리 치유됨!")
+			"경미한 상처가 있지만 빨리 치유됨!"
 		} else {
-			println(name + " 경미한 상처만 있음")
+			"경미한 상처만 있음"
 		}
 	} else if (healthPoints >= 15) {
-		println(name + " 많이 다친 것 같음")
+		"많이 다친 것 같음"
 	} else {
-		println(name + " 최악의 상태임!")
+		"최악의 상태임!"
 	}
+
+	// 플레이어의 상태 출력
+	println(name + " " + healthStatus)
 }
