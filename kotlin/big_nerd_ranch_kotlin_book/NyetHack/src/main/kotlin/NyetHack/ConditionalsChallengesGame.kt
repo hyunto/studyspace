@@ -36,4 +36,7 @@ fun main(args: Array<String>) {
 	println((if (auraVisible) "(Aura: $auraColor) " else "")
 		+ "(Blessed: ${if (isBlessed) "YES" else "NO"})")
 	println("$name $healthStatus")
+
+	val statusFormatString = String.format("\n(HP: %d)(Aura: %s) -> %s %s", healthPoints, auraColor, name, healthStatus)
+	println(statusFormatString)
 }
