@@ -14,6 +14,7 @@ fun main(args: Array<String>) {
 
 	// 플레이어의 상태 출력
 	printPlayerStatus(auraColor, isBlessed, name, healthStatus)
+	castFireball()
 }
 
 private fun printPlayerStatus(auraColor: String, isBlessed: Boolean, name: String, healthStatus: String) {
@@ -41,4 +42,8 @@ private fun formatHealthStatus(healthPoints: Int, isBlessed: Boolean): String {
 		else -> "error"
 	}
 	return healthStatus
+}
+
+private fun castFireball(numFireballs: Int = 2) {
+	println("한 덩어리의 파이어볼이 나타난다. (x$numFireballs)")
 }
