@@ -18,6 +18,10 @@ fun main(args: Array<String>) {
 		healthStatus = healthStatus,
 		auraColor = auraColor)
 	castFireball()
+
+	performCombat()
+	performCombat("로우")
+	performCombat("슬라임", true)
 }
 
 private fun printPlayerStatus(auraColor: String, isBlessed: Boolean, name: String, healthStatus: String) {
@@ -25,11 +29,7 @@ private fun printPlayerStatus(auraColor: String, isBlessed: Boolean, name: Strin
 	println("$name $healthStatus")
 }
 
-private fun auraColor(isBlessed: Boolean, healthPoints: Int, isImmortal: Boolean): String {
-	val auraVisible = isBlessed && healthPoints > 50 || isImmortal
-	val auraColor = if (auraVisible) "GREEN" else "NONE"
-	return auraColor
-}
+private fun auraColor(isBlessed: Boolean, healthPoints: Int, isImmortal: Boolean) = if (isBlessed && healthPoints > 50 || isImmortal) "GREEN" else "NONE"
 
 private fun formatHealthStatus(healthPoints: Int, isBlessed: Boolean) = when (healthPoints) {
 	100 -> "최상의 상태임!"
@@ -45,3 +45,19 @@ private fun formatHealthStatus(healthPoints: Int, isBlessed: Boolean) = when (he
 }
 
 private fun castFireball(numFireballs: Int = 2) = println("한 덩어리의 파이어볼이 나타난다. (x$numFireballs)")
+
+fun performCombat() {
+	println("적군이 없다!")
+}
+
+fun performCombat(enemyName: String) {
+	println("$enemyName 과 전투를 시작함")
+}
+
+fun performCombat(enemyName: String, isBlessed: Boolean) {
+	if (isBlessed) {
+		println("$enemyName 과 전투를 시작함. 축복을 받음!")
+	} else {
+		println("$enemyName 과 전투를 시작함")
+	}
+}
