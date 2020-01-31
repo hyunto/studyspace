@@ -7,4 +7,11 @@ fun main(args: Array<String>) {
 		"SimVillage 방문을 환영합니다, $playerName 님! (copyright $currentYear)"
 	}
 	println(greetingFunction("hyunto", 2))
+
+	// --------------------------------------------------------------------
+	val greetingFunction2 = {
+		val currentYear = 2020
+		"SimVillage 방문을 환영합니다, 촌장님! (copyright $currentYear)"
+	}
+	println(greetingFunction2())
 }
