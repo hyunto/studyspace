@@ -14,4 +14,12 @@ fun main(args: Array<String>) {
 		"SimVillage 방문을 환영합니다, 촌장님! (copyright $currentYear)"
 	}
 	println(greetingFunction2())
+
+	// --------------------------------------------------------------------
+	val greetingFunction3 = { playerName: String, numBuildings: Int ->
+		val currentYear = 2020
+		println("$numBuildings 채의 건물이 추가된")
+		"SimVillage 방문을 환영합니다, $playerName 님! (copyright $currentYear)"
+	}
+	println(greetingFunction3("hyunto", 5))
 }
