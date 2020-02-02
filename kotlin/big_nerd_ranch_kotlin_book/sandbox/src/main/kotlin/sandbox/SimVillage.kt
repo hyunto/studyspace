@@ -40,6 +40,7 @@ fun main(args: Array<String>) {
 	println()
 
 	// --------------------------------------------------------------------
+	// 단축 문법
 	runSimulation("hyunto") { playerName, numBuildings ->
 		val currentYear = 2020
 		println("*** 단축 문법 ***")
@@ -47,9 +48,45 @@ fun main(args: Array<String>) {
 		"SimVillage 방문을 환영합니다, $playerName 님! (copyright $currentYear)"
 	}
 	println()
+
+	// --------------------------------------------------------------------
+	// inline 키워드
+	runSimulationInline("hyunto") { playerName, numBuildings ->
+		val currentYear = 2020
+		println("*** inline 키워드 ***")
+		println("$numBuildings 채의 건물이 추가된")
+		"SimVillage 방문을 환영합니다, $playerName 님! (copyright $currentYear)"
+	}
+	println()
+
+	// --------------------------------------------------------------------
+	// 함수 참조
+	println("*** 함수 참조 ***")
+	runSimulationFunctionReference("hyunto", ::printConstructionCost) { playerName, numBuildings ->
+		val currentYear = 2020
+		println("$numBuildings 채의 건물이 추가됨")
+		"SimVillage 방문을 환영합니다, $playerName 님! (copyright $currentYear)"
+	}
+
 }
 
 fun runSimulation(playerName: String, greetingFunction: (String, Int) -> String) {
 	val numBuildings = (1..3).shuffled().last()
 	println(greetingFunction(playerName, numBuildings))
+}
+
+inline fun runSimulationInline(playerName: String, greetingFunction: (String, Int) -> String) {
+	val numBuildings = (1..3).shuffled().last()
+	println(greetingFunction(playerName, numBuildings))
+}
+
+inline fun runSimulationFunctionReference(playerName: String, costPrinter: (Int) -> Unit, greetingFunction: (String, Int) -> String) {
+	val numBuildings = (1..3).shuffled().last()
+	costPrinter(numBuildings)
+	println(greetingFunction(playerName, numBuildings))
+}
+
+fun printConstructionCost(numBuildings: Int) {
+	val cost = 500
+	println("건축 비용: ${cost * numBuildings}")
 }
