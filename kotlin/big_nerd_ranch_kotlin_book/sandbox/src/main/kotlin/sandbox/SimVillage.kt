@@ -93,7 +93,11 @@ inline fun runSimulationFunctionReference(playerName: String, costPrinter: (Int)
 
 fun runSimulationReteruningFunction() {
 	val greetingFunction = configureGreetingFunction()
-	println(greetingFunction("hyunto"))
+
+	// 클로저로 인해 configureGreetingFunction()에서 반환된 람다식 밖에 있는 numBuildings 값을 계속해서 참조할 수 있다.
+	println(greetingFunction("hyunto"))		// numBuildings 값 : 6
+	println(greetingFunction("hyunto"))		// numBuildings 값 : 7
+	println(greetingFunction("hyunto"))		// numBuildings 값 : 8
 }
 
 fun printConstructionCost(numBuildings: Int) {
