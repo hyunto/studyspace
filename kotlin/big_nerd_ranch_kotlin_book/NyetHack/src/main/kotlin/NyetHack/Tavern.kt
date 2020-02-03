@@ -31,4 +31,10 @@ fun main(args: Array<String>) {
 	// Null Coalescing Operator
 	var nullSafe5 = readLine() ?: "empty space"
 	println(nullSafe5)
+
+	// Null Coalescing Operator with let
+	var nullSafe6 = readLine()?.let {
+		it.capitalize()
+	} ?: println("input is null")
+	println(nullSafe6)
 }
