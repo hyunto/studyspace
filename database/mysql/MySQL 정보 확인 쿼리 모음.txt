@@ -1,0 +1,42 @@
+﻿-- MySQL 정보 확인 쿼리
+
+-- 1. Table Engine Type
+SELECT t.table_schema, t.table_name, ENGINE 
+FROM information_schema.tables t INNER JOIN information_schema.columns c 
+	ON t.table_schema=c.table_schema AND t.table_name=c.table_name 
+WHERE ENGINE != 'InnoDB' AND t.table_schema NOT IN ('information_schema', 'mysql', 'performance_schema') 
+GROUP BY t.table_schema, t.table_name 
+HAVING t.table_schema IN ('bns_training2', 'dic', 'pb_aion', 'pb_bns', 'pb_lineage', 'pb_lineage2classic', 'qna_aion', 'qna_lineage', 'qna_ln2');
+
+
+-- 2. Database 용량 확인
+SELECT table_schema AS "Database Name", 								-- 데이터베이스 그룹핑
+	CONCAT(ROUND(SUM(data_length + index_length) / 1024 / 1024, 2), 'M') AS "Size(MB)",		-- 용량(MB)
+	CONCAT(ROUND(SUM(data_length + index_length) / 1024 / 1024 / 1024, 2), 'G') AS "Size(GB)"	-- 용량(GB)
+FROM information_schema.TABLES
+GROUP BY table_schema;
+
+
+-- 3. Table 용량 확인
+SELECT	CONCAT(table_schema, '.', table_name),							-- 테이블명
+	CONCAT(ROUND(table_rows / 1000000, 2), 'M') ROWS,					-- ROWS 갯수
+	CONCAT(ROUND(data_length / (1024*1024*1024), 2), 'G') DATA,				-- 데이터 용량
+	CONCAT(ROUND(index_length / (1024*1024*1024), 2), 'G') idx, 				-- 인덱스 용량
+	CONCAT(ROUND((data_length + index_length) / (1024*1024*1024), 2), 'G') total_size, 	-- 전체 용량(데이터 + 인덱스)
+	ROUND(index_length / data_length, 2) idxfrac						-- 
+FROM information_schema.TABLES
+WHERE table_name = '테이블명';									-- 조회할 테이블 명 입력
+
+
+-- 4. 테이블 건수 조회
+-- 1) 데이터베이스 별 검색
+SELECT	table_name AS '테이블 명',	-- 테이블 명
+	table_rows AS 'ROW 수'		-- ROW 수
+FROM information_schema.tables
+WHERE table_schema = '데이터베이스명';	-- 조회할 데이터베이스명 입력
+-- 2) 테이블 별 검색
+USE 데이터베이스명			-- 데이터베이스 명 입력
+SELECT	table_name AS '테이블 명',	-- 테이블 명
+	table_rows AS 'ROW 수'		-- ROW 수
+FROM information_schema.tables
+WHERE table_name = '테이블명';		-- 조회할 테이블명 입력
