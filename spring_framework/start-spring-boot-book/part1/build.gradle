@@ -1,0 +1,81 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.10.RELEASE'
+        querydslVersion = '4.1.4'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+group = 'com.hyunto'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	providedRuntime
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+
+    compile("com.querydsl:querydsl-jpa:${querydslVersion}")
+    compile("com.querydsl:querydsl-apt:${querydslVersion}")
+    compile("com.querydsl:querydsl-core:${querydslVersion}")
+
+    runtime('org.springframework.boot:spring-boot-devtools')
+	runtime('mysql:mysql-connector-java')
+
+	compileOnly('org.projectlombok:lombok')
+
+	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+/*
+ * Querydsl Settings
+ * Reference : http://netframework.tistory.com/entry/gradle-%EC%A0%95%EB%A6%AC-queryDSL-code-generate-v-4x
+ */
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java', 'src/main/generated'
+        }
+    }
+}
+
+task generateQueryDSL(type: JavaCompile, group: 'build', description: "Generates the QueryDSL query types") {
+    file(new File(projectDir, "/src/main/generated")).deleteDir()
+    file(new File(projectDir, "/src/main/generated")).mkdirs()
+
+    source = sourceSets.main.java
+    classpath = configurations.compile + configurations.compileOnly
+
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor",
+            "com.querydsl.apt.jpa.JPAAnnotationProcessor"
+    ]
+
+    destinationDir = file('src/main/generated')
+}
+
+compileJava {
+    dependsOn generateQueryDSL
+}
+
+clean.doLast {
+    file(new File(projectDir, "/src/main/generate")).deleteDir()
+}

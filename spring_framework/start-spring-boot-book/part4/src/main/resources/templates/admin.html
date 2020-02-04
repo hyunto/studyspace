@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>Thymeleaf3</title>
+</head>
+<body>
+	<h1>Admin Page for Administrator!!!</h1>
+
+	<hr/>
+
+	<h3 sec:authentication="name">Spring Security Username</h3>
+	<h3>[[${#authentication.name}]]</h3>
+
+	<hr/>
+
+	<p sec:authorize-url="/admin/aaa">
+		<a href="/admin/aaa">ADMIN AAA</a>
+	</p>
+
+	<p sec:authorize-url="/manager/aaa">
+		<a href="/manager/aaa">MANAGER AAA</a>
+	</p>
+
+	<hr/>
+
+	<h1 sec:authorize="hasRole('ROLE_ADMIN')">
+		This content is only for administrators.
+	</h1>
+
+	<hr/>
+
+	<div>
+		[[ ${#authentication.principal} ]]
+	</div>
+
+	<hr/>
+
+	<div th:with="member=${#authentication.principal.member}">
+		<p>[[ ${member.uid} ]]</p>
+		<p>[[ ${member.upw} ]]</p>
+		<p>[[ ${member.uname} ]]</p>
+	</div>
+</body>
+</html>
