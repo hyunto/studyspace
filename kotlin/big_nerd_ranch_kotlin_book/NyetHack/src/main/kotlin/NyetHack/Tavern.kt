@@ -2,9 +2,13 @@ package NyetHack
 
 const val TAVERN_NAME = "Taernyl's Folly"
 
+var playerGold = 10
+var playerSilver = 10
+
 fun main(args: Array<String>) {
 	val isChapter5 = false
-	val isChapter7 = true
+	val isChapter7 = false
+	val isChapter8 = true
 
 	if (isChapter5) {
 		//Safe Call Operator
@@ -54,6 +58,21 @@ fun main(args: Array<String>) {
 		println(toDragonSpeak("Dragon's breath: It's got what adventures crave!"))
 		println(toDragonSpeak("DRAGON'S BREATH: IT'S GOT WHAT ADVENTURES CRAVE!"))
 	}
+
+	// ------------------------------------------------------------------------
+
+	if (isChapter8) {
+		placeOrder("shandy,Dragon's Breath,5.91")
+	}
+}
+
+fun performPurchase(price: Double) {
+	displayBalance()
+	println("금화 $price 로 술을 구입함")
+}
+
+private fun displayBalance() {
+	println("플레이어의 지갑 잔액: 금화 $playerGold 개, 은화 $playerSilver 개")
 }
 
 private fun toDragonSpeak(phrase: String) =
@@ -76,6 +95,8 @@ private fun placeOrder(menuData: String) {
 	val (type, name, price) = menuData.split(',')
 	val message = "마드리갈은 금화 $price 로 $name ($type)를 구입한다."
 	println(message)
+
+	performPurchase(price.toDouble())
 
 	val phrase = if (name == "Dragon's Breath") {
 		"마드리갈이 감탄한다: ${toDragonSpeak("와, $name 진짜 좋구나!")}"
