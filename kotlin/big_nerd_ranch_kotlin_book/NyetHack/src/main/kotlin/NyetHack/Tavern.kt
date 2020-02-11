@@ -49,18 +49,21 @@ fun main(args: Array<String>) {
 
 	if (isChapter7) {
 //		placeOrder("shandy,Dragon's Breath,5.91")
-		placeOrder("elixir,Shirley's Temple, 4.12")
+//		placeOrder("elixir,Shirley's Temple, 4.12")
+
+		println(toDragonSpeak("Dragon's breath: It's got what adventures crave!"))
+		println(toDragonSpeak("DRAGON'S BREATH: IT'S GOT WHAT ADVENTURES CRAVE!"))
 	}
 }
 
 private fun toDragonSpeak(phrase: String) =
-	phrase.replace(Regex("[aeiou]")) {
+	phrase.replace(Regex("[aeiou]", RegexOption.IGNORE_CASE)) {
 		when(it.value) {
-			"a" -> "4"
-			"e" -> "3"
-			"i" -> "1"
-			"o" -> "0"
-			"u" -> "|_|"
+			"a", "A" -> "4"
+			"e", "E" -> "3"
+			"i", "I" -> "1"
+			"o", "O" -> "0"
+			"u", "U" -> "|_|"
 			else -> it.value
 		}
 	}
