@@ -64,7 +64,8 @@ fun main(args: Array<String>) {
 	// ------------------------------------------------------------------------
 
 	if (isChapter8) {
-		placeOrder("shandy,Dragon's Breath,5.91")
+//		placeOrder("shandy,Dragon's Breath,5.91")
+		placeOrder("shandy,Dragon's Breath,12.1")
 	}
 }
 
@@ -73,7 +74,13 @@ fun performPurchase(price: Double) {
 
 	val totalPurse = playerGold + ( playerSilver / 100.0)
 	println("지갑 전체 금액: 금화 $totalPurse")
-	println("금화 $price 로 술을 구입함")
+
+	if (totalPurse - price > 0) {
+		println("금화 $price 로 술을 구입함")
+	} else {
+		println("잔액부족")
+		return
+	}
 
 	val remainingBalance = totalPurse - price
 	println("남은 잔액: ${"%.2f".format(remainingBalance)}")
