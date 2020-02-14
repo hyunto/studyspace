@@ -14,13 +14,16 @@ val uniquePatrons = mutableSetOf<String>()
 val menuList = File("data/tavern-menu-items.txt")
 	.readText()
 	.split("\n")
+val patronGold = mutableMapOf<String, Double>()
 
 fun main(args: Array<String>) {
 	val isChapter5 = false
 	val isChapter7 = false
 	val isChapter8 = false
 	val isCollectionList = false
-	val isCollectionSet = true
+	val isCollectionSet = false
+	val isCollectionMap = true
+	val isChallenge = false
 
 	if (isChapter5) {
 		//Safe Call Operator
@@ -133,15 +136,44 @@ fun main(args: Array<String>) {
 		println(uniquePatrons)
 	}
 
-	println("*** Welcome to Taernyl's Folly ***")
-	menuList.forEach { menu ->
-		val (_, name, price) = menu.split(',')
-		print(name.capitalize())
-		(0..33 - name.length - price.length).forEach { print(".") }
-		println(price)
+	if (isChallenge) {
+		println("*** Welcome to Taernyl's Folly ***")
+		menuList.forEach { menu ->
+			val (_, name, price) = menu.split(',')
+			print(name.capitalize())
+			(0..33 - name.length - price.length).forEach { print(".") }
+			println(price)
+		}
+	}
+
+	if (isCollectionMap) {
+		(0..9).forEach {
+			val first = patronList.shuffled().first()
+			val last = lastName.shuffled().first()
+			val name = "$first $last"
+			uniquePatrons.add(name)
+		}
+
+		uniquePatrons.forEach {
+			patronGold[it] = 6.0
+			placeOrder(it, menuList.shuffled().first())
+		}
+		displayPatronBalances()
 	}
 }
 
+fun performPurchaseV2(price: Double, patronName: String) {
+	val totalPurse = patronGold.getValue(patronName)
+	patronGold[patronName] = totalPurse - price
+}
+
+private fun displayPatronBalances() {
+	patronGold.forEach { patron, balance ->
+		println("$patron, balanace: ${"%.2f".format(balance)}")
+	}
+}
+
+@Deprecated("Not Used")
 fun performPurchase(price: Double) {
 	displayBalance()
 
@@ -165,6 +197,7 @@ fun performPurchase(price: Double) {
 	displayBalance()
 }
 
+@Deprecated("Not Used")
 private fun displayBalance() {
 	println("플레이어의 지갑 잔액: 금화 $playerGold 개, 은화 $playerSilver 개")
 }
@@ -187,10 +220,20 @@ private fun placeOrder(patronName: String, menuData: String) {
 	println("$patronName 은 $tavernMaster 에게 주문한다.")
 
 	val (type, name, price) = menuData.split(',')
-	val message = "$patronName 은 금화 $price 로 $name ($type)를 구입한다."
-	println(message)
 
-	performPurchase(price.toDouble())
+	if (price.toDouble() <= patronGold.getValue(patronName)) {
+		println("$patronName 은 금화 $price 로 $name ($type)를 구입한다.")
+	} else {
+		println("$patronName 은 돈이 없어 쭂겨났다.")
+		println()
+		return
+	}
+	
+//	val message = "$patronName 은 금화 $price 로 $name ($type)를 구입한다."
+//	println(message)
+
+//	performPurchase(price.toDouble())
+	performPurchaseV2(price.toDouble(), patronName)
 
 	val phrase = if (name == "Dragon's Breath") {
 		"$patronName 이 감탄한다: ${toDragonSpeak("와, $name 진짜 좋구나!")}"
