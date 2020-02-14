@@ -8,8 +8,9 @@ const val TAVERN_NAME = "Taernyl's Folly"
 var playerGold = 10
 var playerSilver = 10
 
-//val patronList: List<String> = listOf("Eli", "Mordoc", "Sophie")
 val patronList: MutableList<String> = mutableListOf("Eli", "Mordoc", "Sophie")
+val lastName = listOf("Ironfoot", "Fernsworth", "Baggins")
+val uniquePatrons = mutableSetOf<String>()
 val menuList = File("data/tavern-menu-items.txt")
 	.readText()
 	.split("\n")
@@ -18,7 +19,8 @@ fun main(args: Array<String>) {
 	val isChapter5 = false
 	val isChapter7 = false
 	val isChapter8 = false
-	val isCollectionTest = true
+	val isCollectionList = false
+	val isCollectionSet = true
 
 	if (isChapter5) {
 		//Safe Call Operator
@@ -78,7 +80,7 @@ fun main(args: Array<String>) {
 
 	// ------------------------------------------------------------------------
 
-	if (isCollectionTest) {
+	if (isCollectionList) {
 
 		// 주요 함수
 //		println(patronList[0])
@@ -118,7 +120,17 @@ fun main(args: Array<String>) {
 		menuList.forEachIndexed { index, data ->
 			println("$index : $data")
 		}
+	}
 
+	if (isCollectionSet) {
+		(0..9).forEach {
+			val first = patronList.shuffled().first()
+			val last = lastName.shuffled().first()
+			val name = "$first $last"
+//			uniquePatrons += name
+			uniquePatrons.add(name)
+		}
+		println(uniquePatrons)
 	}
 }
 
