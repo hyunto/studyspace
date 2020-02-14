@@ -1,5 +1,6 @@
 package NyetHack
 
+import java.io.File
 import kotlin.math.roundToInt
 
 const val TAVERN_NAME = "Taernyl's Folly"
@@ -7,10 +8,17 @@ const val TAVERN_NAME = "Taernyl's Folly"
 var playerGold = 10
 var playerSilver = 10
 
+//val patronList: List<String> = listOf("Eli", "Mordoc", "Sophie")
+val patronList: MutableList<String> = mutableListOf("Eli", "Mordoc", "Sophie")
+val menuList = File("data/tavern-menu-items.txt")
+	.readText()
+	.split("\n")
+
 fun main(args: Array<String>) {
 	val isChapter5 = false
 	val isChapter7 = false
-	val isChapter8 = true
+	val isChapter8 = false
+	val isCollectionTest = true
 
 	if (isChapter5) {
 		//Safe Call Operator
@@ -65,7 +73,52 @@ fun main(args: Array<String>) {
 
 	if (isChapter8) {
 //		placeOrder("shandy,Dragon's Breath,5.91")
-		placeOrder("shandy,Dragon's Breath,12.1")
+//		placeOrder("shandy,Dragon's Breath,12.1")
+	}
+
+	// ------------------------------------------------------------------------
+
+	if (isCollectionTest) {
+
+		// 주요 함수
+//		println(patronList[0])
+//		println(patronList.first())
+//		println(patronList.last())
+//		println(patronList.getOrElse(5) { "Unknown Patron" })
+//		println(patronList.getOrNull(6) ?: "Unknwon Patron")
+
+		if (patronList.contains("Eli")) {
+			println("술집 주인이 말한다: Eli는 안쪽 방에서 카드하고 있어요.")
+		} else {
+			println("술집 주인이 말한다: Eli는 여기 없어요.")
+		}
+
+		if (patronList.containsAll(listOf("Sophie", "Mordoc"))) {
+			println("술집 주인이 말한다: 네, 모두 있어요.")
+		} else {
+			println("술집 주인이 말한다: 아니오, 나간 사람도 있습니다.")
+		}
+
+		patronList.remove("Eli");
+		patronList.add("Alex")
+		patronList.add(0, "Alex")
+		patronList[0] = "Alexis"
+		println(patronList)
+		println()
+
+		// 반복
+//		for (patron in patronList) {
+//			println("좋은 밤입니다, $patron 님")
+//		}
+		patronList.forEachIndexed { index, patron ->
+			println("좋은 밤입니다, $patron 님 - 당신은 #${index + 1} 번째 입니다.")
+			placeOrder(patron, menuList.shuffled().first())
+		}
+
+		menuList.forEachIndexed { index, data ->
+			println("$index : $data")
+		}
+
 	}
 }
 
@@ -108,21 +161,22 @@ private fun toDragonSpeak(phrase: String) =
 		}
 	}
 
-private fun placeOrder(menuData: String) {
+private fun placeOrder(patronName: String, menuData: String) {
 	val indexOfApostrophe = TAVERN_NAME.indexOf('\'')
 	val tavernMaster = TAVERN_NAME.substring(0 until indexOfApostrophe)
-	println("마드리갈은 $tavernMaster 에게 주문한다.")
+	println("$patronName 은 $tavernMaster 에게 주문한다.")
 
 	val (type, name, price) = menuData.split(',')
-	val message = "마드리갈은 금화 $price 로 $name ($type)를 구입한다."
+	val message = "$patronName 은 금화 $price 로 $name ($type)를 구입한다."
 	println(message)
 
 	performPurchase(price.toDouble())
 
 	val phrase = if (name == "Dragon's Breath") {
-		"마드리갈이 감탄한다: ${toDragonSpeak("와, $name 진짜 좋구나!")}"
+		"$patronName 이 감탄한다: ${toDragonSpeak("와, $name 진짜 좋구나!")}"
 	} else {
-		"마드리갈이 말한다: 감사합니다 $name."
+		"$patronName 이 말한다: 감사합니다 $name."
 	}
 	println(phrase)
+	println()
 }
