@@ -132,6 +132,14 @@ fun main(args: Array<String>) {
 		}
 		println(uniquePatrons)
 	}
+
+	println("*** Welcome to Taernyl's Folly ***")
+	menuList.forEach { menu ->
+		val (_, name, price) = menu.split(',')
+		print(name.capitalize())
+		(0..33 - name.length - price.length).forEach { print(".") }
+		println(price)
+	}
 }
 
 fun performPurchase(price: Double) {
