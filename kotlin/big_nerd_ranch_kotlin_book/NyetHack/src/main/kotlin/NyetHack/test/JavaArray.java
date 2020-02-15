@@ -1,4 +1,4 @@
-package NyetHack;
+package NyetHack.test;
 
 public class JavaArray {
 

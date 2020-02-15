@@ -1,4 +1,4 @@
-package NyetHack
+package NyetHack.challenge
 
 fun main(args: Array<String>) {
 	val name = "마르티나"

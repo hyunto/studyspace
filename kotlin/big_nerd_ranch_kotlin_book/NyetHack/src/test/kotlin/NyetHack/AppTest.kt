@@ -3,6 +3,7 @@
  */
 package NyetHack
 
+import NyetHack.test.App
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
