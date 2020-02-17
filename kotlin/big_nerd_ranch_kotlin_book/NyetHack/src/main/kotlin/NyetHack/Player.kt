@@ -1,15 +1,30 @@
 package NyetHack
 
-class Player {
-	var name = "martina"
-		get() = field.capitalize()
+import java.io.File
+
+class Player(_name: String,
+			 var healthPoints: Int = 100,
+			 val isBlessed: Boolean,
+			 private val isImmortal: Boolean) {
+	var name = _name
+		get() = "${field.capitalize()} of $hometown"
 		set(value) {
 			field = value.trim()
 		}
 
-	var healthPoints = 89
-	val isBlessed = true
-	private val isImmortal = false
+	val hometown by lazy { selectHometown() }
+
+	private fun selectHometown() = File("data/towns.txt")
+		.readText()
+		.split("\n")
+		.shuffled()
+		.first()
+
+	constructor(name: String) : this(name,
+		isBlessed = true,
+		isImmortal = false) {
+		if (name.toLowerCase() == "link") healthPoints = 80
+	}
 
 	fun castFireball(numFireballs: Int = 2) = println("한 덩어리의 파이어볼이 나타난다. (x$numFireballs)")
 

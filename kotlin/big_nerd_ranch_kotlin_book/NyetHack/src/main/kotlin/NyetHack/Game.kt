@@ -1,7 +1,8 @@
 package NyetHack
 
 fun main(args: Array<String>) {
-	val player = Player()
+//	val player = Player("Martina", 89, isBlessed = true, isImmortal = false)
+	val player = Player("Martina")
 	player.name = "veronica    "
 	player.castFireball()
 
