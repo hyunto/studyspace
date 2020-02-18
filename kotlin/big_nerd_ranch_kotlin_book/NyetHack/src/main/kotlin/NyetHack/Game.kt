@@ -6,6 +6,11 @@ fun main(args: Array<String>) {
 	player.name = "veronica    "
 	player.castFireball()
 
+//	var currentRoom = Room("Foyer")
+	var currentRoom = TownSquare()
+	println(currentRoom.description())
+	println(currentRoom.load())
+
 	// 플레이어의 상태 출력
 	printPlayerStatus(player)
 
