@@ -1,27 +1,11 @@
 package NyetHack
 
 fun main(args: Array<String>) {
-//	val player = Player("Martina", 89, isBlessed = true, isImmortal = false)
-	val player = Player("Martina")
-	player.name = "veronica    "
-	player.castFireball()
-
-//	var currentRoom = Room("Foyer")
-	var currentRoom = TownSquare()
-	println(currentRoom.description())
-	println(currentRoom.load())
-
-	// 플레이어의 상태 출력
-	printPlayerStatus(player)
+	Game.play()
 
 	performCombat()
 	performCombat("로우")
 	performCombat("슬라임", true)
-}
-
-private fun printPlayerStatus(player: Player) {
-	println("(Aura: ${player.auraColor()}) (Blessed: ${if (player.isBlessed) "YES" else "NO"})")
-	println("${player.name} ${player.formatHealthStatus()}")
 }
 
 fun performCombat() {
@@ -38,4 +22,35 @@ fun performCombat(enemyName: String, isBlessed: Boolean) {
 	} else {
 		println("$enemyName 과 전투를 시작함")
 	}
+}
+
+object Game {
+
+	private val player = Player("Martina")
+	private var currentRoom = TownSquare()
+
+	init {
+		println("방문을 환영합니다.")
+		player.castFireball()
+	}
+
+	fun play() {
+		while (true) {
+			println(currentRoom.description())
+			println(currentRoom.load())
+
+			// 플레이어의 상태 출력
+			printPlayerStatus(player)
+
+			print("> 명령을 입력하세요: ")
+			println("최근 명령: ${readLine()}")
+		}
+	}
+
+	private fun printPlayerStatus(player: Player) {
+		println("(Aura: ${player.auraColor()}) " +
+				"(Blessed: ${if (player.isBlessed) "YES" else "NO"})")
+		println("${player.name} ${player.formatHealthStatus()}")
+	}
+
 }
