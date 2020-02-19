@@ -1,0 +1,4 @@
+package NyetHack
+
+class Navigation {
+}

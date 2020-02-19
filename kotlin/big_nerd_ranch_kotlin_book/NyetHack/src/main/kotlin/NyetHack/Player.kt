@@ -6,6 +6,7 @@ class Player(_name: String,
 			 var healthPoints: Int = 100,
 			 val isBlessed: Boolean,
 			 private val isImmortal: Boolean) {
+
 	var name = _name
 		get() = "${field.capitalize()} of $hometown"
 		set(value) {
@@ -13,6 +14,7 @@ class Player(_name: String,
 		}
 
 	val hometown by lazy { selectHometown() }
+	var currentPosition = Coordinate(0, 0)
 
 	private fun selectHometown() = File("data/towns.txt")
 		.readText()

@@ -42,6 +42,8 @@ object Game {
 			// 플레이어의 상태 출력
 			printPlayerStatus(player)
 
+			println(Coordinate(1,2))
+
 			print("> 명령을 입력하세요: ")
 			println(GameInput(readLine()).processCommand())
 		}
