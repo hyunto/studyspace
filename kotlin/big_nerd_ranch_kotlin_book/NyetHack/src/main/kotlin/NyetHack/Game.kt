@@ -43,7 +43,7 @@ object Game {
 			printPlayerStatus(player)
 
 			print("> 명령을 입력하세요: ")
-			println("최근 명령: ${readLine()}")
+			println(GameInput(readLine()).processCommand())
 		}
 	}
 
@@ -51,6 +51,18 @@ object Game {
 		println("(Aura: ${player.auraColor()}) " +
 				"(Blessed: ${if (player.isBlessed) "YES" else "NO"})")
 		println("${player.name} ${player.formatHealthStatus()}")
+	}
+
+	private class GameInput(arg: String?) {
+		private val input = arg ?: ""
+		val command = input.split(" ")[0]
+		var argument = input.split(" ").getOrElse(1, {""})
+
+		private fun commandNotFoud() = "적합하지 않은 명령입니다!"
+
+		fun processCommand() = when (command.toLowerCase()) {
+			else -> commandNotFoud()
+		}
 	}
 
 }
