@@ -1,6 +1,7 @@
 package NyetHack
 
 import java.lang.IllegalStateException
+import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
 	Game.play()
@@ -77,6 +78,32 @@ object Game {
 		println("${player.name} ${player.formatHealthStatus()}")
 	}
 
+	private fun endGame() {
+		println("> 게임을 종료합니다. Good Bye~!")
+		exitProcess(0)
+	}
+
+	private fun printWorldMap(): String {
+		var result: String = ""
+		for (listOfRoom in worldMap) {
+			for (room in listOfRoom) {
+				if (room.name == currentRoom.name) {
+					result += "X "
+				} else {
+					result += "O "
+				}
+			}
+			result += "\n"
+		}
+		return result
+	}
+
+	private fun ringBell() = if (currentRoom is TownSquare) {
+			(currentRoom as TownSquare).ringBell()
+		} else {
+			"이 방엔 종이 없습니다."
+		}
+
 	private class GameInput(arg: String?) {
 		private val input = arg ?: ""
 		val command = input.split(" ")[0]
@@ -85,6 +112,9 @@ object Game {
 		private fun commandNotFoud() = "적합하지 않은 명령입니다!"
 
 		fun processCommand() = when (command.toLowerCase()) {
+			"ring" -> ringBell()
+			"map" -> printWorldMap()
+			"quit", "exit" -> endGame()
 			"move" -> move(argument)
 			else -> commandNotFoud()
 		}
