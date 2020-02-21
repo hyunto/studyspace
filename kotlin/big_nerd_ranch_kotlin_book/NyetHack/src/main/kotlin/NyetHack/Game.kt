@@ -1,5 +1,7 @@
 package NyetHack
 
+import java.lang.IllegalStateException
+
 fun main(args: Array<String>) {
 	Game.play()
 
@@ -27,7 +29,11 @@ fun performCombat(enemyName: String, isBlessed: Boolean) {
 object Game {
 
 	private val player = Player("Martina")
-	private var currentRoom = TownSquare()
+	private var currentRoom: Room = TownSquare()
+	private var worldMap = listOf(
+		listOf(currentRoom, Room("Tavern"), Room("Back Room")),
+		listOf(Room("Long Corridor"), Room("Generic Room"))
+	)
 
 	init {
 		println("방문을 환영합니다.")
@@ -49,6 +55,22 @@ object Game {
 		}
 	}
 
+	private fun move(directionInput: String) =
+		try {
+			val direction = Direction.valueOf(directionInput.toUpperCase())
+			val newPosition = direction.updateCoordinate(player.currentPosition)
+			if (!newPosition.isInBounds) {
+				throw IllegalStateException("$direction 쪽 방향이 범위를 벗어남.")
+			}
+
+			val newRoom = worldMap[newPosition.y][newPosition.x]
+			player.currentPosition = newPosition
+			currentRoom = newRoom
+			"OK, $direction 방향의 ${newRoom.name}로 이동했습니다."
+		} catch (e: Exception) {
+			"잘못된 방향임: $directionInput"
+		}
+
 	private fun printPlayerStatus(player: Player) {
 		println("(Aura: ${player.auraColor()}) " +
 				"(Blessed: ${if (player.isBlessed) "YES" else "NO"})")
@@ -63,6 +85,7 @@ object Game {
 		private fun commandNotFoud() = "적합하지 않은 명령입니다!"
 
 		fun processCommand() = when (command.toLowerCase()) {
+			"move" -> move(argument)
 			else -> commandNotFoud()
 		}
 	}
