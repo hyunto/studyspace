@@ -72,6 +72,30 @@ object Game {
 			"잘못된 방향임: $directionInput"
 		}
 
+	private fun fight() = currentRoom.monster?.let {
+		while (player.healthPoints > 0 && it.healthPoints > 0) {
+			slay(it)
+			Thread.sleep(1000)
+		}
+		"전투가 끝났음."
+	} ?: "여기에는 싸울 괴물이 없습니다..."
+
+	private fun slay(monster: Monster) {
+		println("${monster.name} -- ${monster.attack(player)} 손상을 입힘!")
+		println("${player.name} -- ${player.attack(monster)} 손상을 입힘!")
+
+		if (player.healthPoints <= 0) {
+			println(">>>> 당신은 졌습니다! 게임을 종료합니다... <<<<")
+			exitProcess(0)
+		}
+
+		if (monster.healthPoints <= 0) {
+			println(">>>> ${monster.name} -- 격퇴됨! <<<<")
+			currentRoom.monster = null
+		}
+
+	}
+
 	private fun printPlayerStatus(player: Player) {
 		println("(Aura: ${player.auraColor()}) " +
 				"(Blessed: ${if (player.isBlessed) "YES" else "NO"})")
@@ -112,6 +136,7 @@ object Game {
 		private fun commandNotFoud() = "적합하지 않은 명령입니다!"
 
 		fun processCommand() = when (command.toLowerCase()) {
+			"fight" -> fight()
 			"ring" -> ringBell()
 			"map" -> printWorldMap()
 			"quit", "exit" -> endGame()
