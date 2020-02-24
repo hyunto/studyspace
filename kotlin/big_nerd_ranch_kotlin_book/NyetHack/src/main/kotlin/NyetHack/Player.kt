@@ -3,9 +3,9 @@ package NyetHack
 import java.io.File
 
 class Player(_name: String,
-			 var healthPoints: Int = 100,
+			 override var healthPoints: Int = 100,
 			 val isBlessed: Boolean,
-			 private val isImmortal: Boolean) {
+			 private val isImmortal: Boolean) : Fightable {
 
 	var name = _name
 		get() = "${field.capitalize()} of $hometown"
@@ -15,6 +15,19 @@ class Player(_name: String,
 
 	val hometown by lazy { selectHometown() }
 	var currentPosition = Coordinate(0, 0)
+
+	override val diceCount = 3
+	override val diceSides = 6
+
+	override fun attack(opponent: Fightable): Int {
+		val damageDealt = if (isBlessed) {
+			damageRoll * 2
+		} else {
+			damageRoll
+		}
+		opponent.healthPoints -= damageDealt
+		return damageDealt
+	}
 
 	private fun selectHometown() = File("data/towns.txt")
 		.readText()
