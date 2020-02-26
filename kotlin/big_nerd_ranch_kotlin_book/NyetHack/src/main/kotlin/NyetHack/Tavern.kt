@@ -16,6 +16,8 @@ val menuList = File("data/tavern-menu-items.txt")
 	.split("\n")
 val patronGold = mutableMapOf<String, Double>()
 
+private fun <T> Iterable<T>.random(): T = this.shuffled().first()
+
 fun main(args: Array<String>) {
 	val isChapter5 = false
 	val isChapter7 = false
@@ -117,7 +119,7 @@ fun main(args: Array<String>) {
 //		}
 		patronList.forEachIndexed { index, patron ->
 			println("좋은 밤입니다, $patron 님 - 당신은 #${index + 1} 번째 입니다.")
-			placeOrder(patron, menuList.shuffled().first())
+			placeOrder(patron, menuList.random())
 		}
 
 		menuList.forEachIndexed { index, data ->
@@ -127,8 +129,8 @@ fun main(args: Array<String>) {
 
 	if (isCollectionSet) {
 		(0..9).forEach {
-			val first = patronList.shuffled().first()
-			val last = lastName.shuffled().first()
+			val first = patronList.random()
+			val last = lastName.random()
 			val name = "$first $last"
 //			uniquePatrons += name
 			uniquePatrons.add(name)
@@ -148,15 +150,15 @@ fun main(args: Array<String>) {
 
 	if (isCollectionMap) {
 		(0..9).forEach {
-			val first = patronList.shuffled().first()
-			val last = lastName.shuffled().first()
+			val first = patronList.random()
+			val last = lastName.random()
 			val name = "$first $last"
 			uniquePatrons.add(name)
 		}
 
 		uniquePatrons.forEach {
 			patronGold[it] = 6.0
-			placeOrder(it, menuList.shuffled().first())
+			placeOrder(it, menuList.random())
 		}
 		displayPatronBalances()
 	}
