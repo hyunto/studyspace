@@ -1,5 +1,6 @@
 package NyetHack
 
+import NyetHack.extensions.random
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -15,8 +16,6 @@ val menuList = File("data/tavern-menu-items.txt")
 	.readText()
 	.split("\n")
 val patronGold = mutableMapOf<String, Double>()
-
-private fun <T> Iterable<T>.random(): T = this.shuffled().first()
 
 fun main(args: Array<String>) {
 	val isChapter5 = false
