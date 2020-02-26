@@ -1,6 +1,6 @@
 package NyetHack
 
-import NyetHack.extensions.random
+import NyetHack.extensions.random as randomizer
 import java.io.File
 
 class Player(_name: String,
@@ -33,7 +33,7 @@ class Player(_name: String,
 	private fun selectHometown() = File("data/towns.txt")
 		.readText()
 		.split("\n")
-		.random()
+		.randomizer()
 
 	constructor(name: String) : this(name,
 		isBlessed = true,
