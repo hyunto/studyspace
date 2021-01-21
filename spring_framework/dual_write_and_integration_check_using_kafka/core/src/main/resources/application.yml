@@ -1,0 +1,33 @@
+server:
+  port: 8090
+
+spring:
+  datasource:
+    hikari:
+      mysql1:
+        jdbc-url: "jdbc:mysql://localhost:11001/test"
+        username: "root"
+        password: "P@ssw0rd"
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      mysql2:
+        jdbc-url: "jdbc:mysql://localhost:11002/test"
+        username: "root"
+        password: "P@ssw0rd"
+        driver-class-name: com.mysql.cj.jdbc.Driver
+#  flyway:
+#    mysql1:
+#      user: "root"
+#      password: "P@ssw0rd"
+#      schemas: ""
+#      url: "jdbc:mysql://localhost:11001/test"
+#      locations: "classpath:db/migration"
+#    mysql2:
+#      user: "root"
+#      password: "P@ssw0rd"
+#      schemas: ""
+#      url: "jdbc:mysql://localhost:11001/test"
+#      locations: "classpath:db/migration"
+
+kafka:
+  server:
+    address: "localhost:9092"
