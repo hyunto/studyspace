@@ -14,7 +14,7 @@ import org.springframework.kafka.core.ProducerFactory
 @EnableKafka
 class KafkaProducerConfig {
 
-	@Value(value = "kafka.server.address")
+	@Value(value = "\${kafka.server.address}")
 	lateinit var address: String
 
 	@Bean

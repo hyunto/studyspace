@@ -11,7 +11,7 @@ import org.springframework.kafka.core.KafkaAdmin
 @Configuration
 class KafkaTopicConfig {
 
-	@Value(value = "kafka.server.address")
+	@Value(value = "\${kafka.server.address}")
 	lateinit var address: String
 
 	@Bean
@@ -25,7 +25,7 @@ class KafkaTopicConfig {
 	fun integrityCheckTopic(): NewTopic {
 		return TopicBuilder.name("integrity_check")
 			.partitions(10)
-			.replicas(3)
+			.replicas(1)
 			.compact()
 			.build();
 	}

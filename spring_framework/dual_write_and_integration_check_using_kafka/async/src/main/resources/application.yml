@@ -14,3 +14,7 @@ spring:
         username: "root"
         password: "P@ssw0rd"
         driver-class-name: com.mysql.cj.jdbc.Driver
+
+kafka:
+  server:
+    address: "localhost:9092"

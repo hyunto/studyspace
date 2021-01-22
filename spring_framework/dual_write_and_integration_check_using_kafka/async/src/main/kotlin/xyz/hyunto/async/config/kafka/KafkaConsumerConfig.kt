@@ -17,7 +17,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
 @EnableKafka
 class KafkaConsumerConfig {
 
-	@Value(value = "kafka.server.address")
+	@Value(value = "\${kafka.server.address}")
 	lateinit var address: String
 
 	@Bean
