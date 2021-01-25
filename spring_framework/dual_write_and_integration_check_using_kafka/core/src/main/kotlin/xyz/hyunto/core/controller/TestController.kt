@@ -1,4 +1,4 @@
-package xyz.hyunto.core.config.controller
+package xyz.hyunto.core.controller
 
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,6 +14,6 @@ class TestController(
 	@GetMapping
 	fun test() {
 		println("Hello, world! - TestController.test()")
-		kafkaTemplate.send("integrity_check", "test","Hello, world! - sending message via kafka")
+		kafkaTemplate.send("test", "test","Hello, world! - sending message via kafka")
 	}
 }

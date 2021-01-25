@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class TestMessageListener(): MessageListener<String, String> {
 
-	@KafkaListener(topics = ["integrity_check"], groupId = "test-group", containerFactory = "kafkaListenerContainerFactory")
+	@KafkaListener(topics = ["test"], groupId = "test-group", containerFactory = "kafkaListenerContainerFactory")
 	override fun onMessage(data: ConsumerRecord<String, String>?) {
 		println("#####")
 		println(data)

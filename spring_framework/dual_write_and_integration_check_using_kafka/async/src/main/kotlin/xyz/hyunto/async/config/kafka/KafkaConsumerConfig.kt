@@ -1,7 +1,6 @@
 package xyz.hyunto.async.config.kafka
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -12,6 +11,7 @@ import org.springframework.kafka.config.KafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
+import xyz.hyunto.async.message.ConsistencyCheckQueueMessage
 
 @Configuration
 @EnableKafka
@@ -33,6 +33,23 @@ class KafkaConsumerConfig {
 	fun kafkaListenerContainerFactory(): KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> {
 		val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
 		factory.consumerFactory = consumerFactory()
+		factory.setConcurrency(3)
+		factory.containerProperties.pollTimeout = 3000
+		return factory
+	}
+
+	@Bean
+	fun consistencyCheckConsumerFactory(): ConsumerFactory<String, ConsistencyCheckQueueMessage> {
+		return DefaultKafkaConsumerFactory(mapOf(
+			ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to address,
+			ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java
+		))
+	}
+
+	@Bean
+	fun consistencyCheckKafkaListenerContainerFactory(): KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ConsistencyCheckQueueMessage>> {
+		val factory = ConcurrentKafkaListenerContainerFactory<String, ConsistencyCheckQueueMessage>()
+		factory.consumerFactory = consistencyCheckConsumerFactory()
 		factory.setConcurrency(3)
 		factory.containerProperties.pollTimeout = 3000
 		return factory
