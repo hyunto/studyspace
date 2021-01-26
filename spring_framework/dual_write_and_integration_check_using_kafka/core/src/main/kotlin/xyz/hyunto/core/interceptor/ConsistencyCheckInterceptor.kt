@@ -8,22 +8,13 @@ import org.apache.ibatis.plugin.Intercepts
 import org.apache.ibatis.plugin.Invocation
 import org.apache.ibatis.plugin.Signature
 import org.springframework.util.ClassUtils
-import xyz.hyunto.core.model.User
-import java.lang.RuntimeException
-import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberFunctions
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.javaGetter
 
 @Intercepts(
 	Signature(type = Executor::class, method = "update", args = [MappedStatement::class, Object::class])
 )
-class ConsistencyCheckInterceptor(): Interceptor {
-
-	companion object {
-		const val ANNOTATION_NAME = "ConsistencyCheckInfo"
-	}
+class ConsistencyCheckInterceptor() : Interceptor {
 
 	override fun intercept(invocation: Invocation?): Any {
 
@@ -33,7 +24,7 @@ class ConsistencyCheckInterceptor(): Interceptor {
 
 		println("##### ConsistencyCheckInterceptor #####")
 
-		when(val annotation = getAnnotation(invocation)) {
+		when (val annotation = getAnnotation(invocation)) {
 			is ConsistencyCheckById -> processById(invocation, annotation)
 			is ConsistencyCheckByProperties -> processByProperties(invocation, annotation)
 		}
@@ -48,37 +39,36 @@ class ConsistencyCheckInterceptor(): Interceptor {
 		val className = mappedStatement.id.substringBeforeLast(".")
 		val methodName = mappedStatement.id.substringAfterLast(".")
 
-		val clazz =  Class.forName(className).kotlin
-		val method = clazz.memberFunctions.firstOrNull { it.name == methodName } ?: throw RuntimeException("cannot find method : ${methodName}")
+		val clazz = Class.forName(className).kotlin
+		val method = clazz.memberFunctions.firstOrNull { it.name == methodName } ?: throw RuntimeException("cannot find method (expected: $methodName)")
 		return method.annotations.firstOrNull { it.annotationClass == ConsistencyCheckById::class } as? ConsistencyCheckById
-			?: method.annotations.firstOrNull{ it.annotationClass == ConsistencyCheckByProperties::class} as? ConsistencyCheckByProperties
-			?: throw RuntimeException("cannot find annotation : @ConsistencyCheckInfo")
+			?: method.annotations.firstOrNull { it.annotationClass == ConsistencyCheckByProperties::class } as? ConsistencyCheckByProperties
+			?: throw RuntimeException("cannot find annotation (expected: ${ConsistencyCheckById::class} or ${ConsistencyCheckByProperties::class})")
 	}
 
 	private fun getParameterMap(invocation: Invocation): MapperMethod.ParamMap<*> {
 		return invocation.args[1] as MapperMethod.ParamMap<*>
 	}
 
-	private fun processById(invocation: Invocation, annotation: ConsistencyCheckById) {
-		println("*** ConsistencyCheckById ***")
-		println(annotation.id)
-		println(annotation.action)
-		println(annotation.tableName.value)
-		println(annotation.type)
+	private fun getId(instance: Any, propertyName: String): Any {
+		val property = instance::class.members.firstOrNull { it.name == propertyName } as? KProperty1<Any, *>
+		return property?.get(instance) ?: throw RuntimeException("No element matching the predicate. (expected: $propertyName)")
+	}
 
+	private fun processById(invocation: Invocation, annotation: ConsistencyCheckById) {
 		val parameterMap = getParameterMap(invocation)
-		val id: Any? = if (ClassUtils.isPrimitiveOrWrapper(annotation.type::class.java)) {
+		val id: Any = if (ClassUtils.isPrimitiveOrWrapper(annotation.type::class.java)) {
 			parameterMap[annotation.id]
 		} else {
-			val model = parameterMap.values.firstOrNull { it::class == annotation.type }?.javaClass?.kotlin
-			if (model != null) {
-				val result = model::class.memberProperties.firstOrNull { it.name == "name" }
-				result?.get(this)
-			} else {
-				throw RuntimeException("id is null")
-			}
-		}
-		println(id)
+			parameterMap.values.firstOrNull { it::class == annotation.type }?.let { getId(it, annotation.id) }
+		} ?: throw RuntimeException("No element matching the predicate. (expected: ${annotation.type})")
+
+		val message = mapOf(
+			"table" to annotation.tableName,
+			"id" to id,
+			"action" to annotation.action
+		)
+		println(message)
 	}
 
 	private fun processByProperties(invocation: Invocation, annotation: ConsistencyCheckByProperties) {

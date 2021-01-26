@@ -2,7 +2,6 @@ package xyz.hyunto.core.mapper
 
 import org.apache.ibatis.annotations.*
 import org.springframework.stereotype.Repository
-import xyz.hyunto.core.aspect.DualWriteConsistencyCheck
 import xyz.hyunto.core.config.database.MySql1Mapper
 import xyz.hyunto.core.interceptor.ConsistencyCheckById
 import xyz.hyunto.core.model.Action
@@ -12,7 +11,6 @@ import xyz.hyunto.core.model.User
 // language=SQL
 @MySql1Mapper
 @Repository
-@DualWriteConsistencyCheck<User>(id = "id", model = User::class)
 interface UserMapper {
 
 	@Insert("""
@@ -24,7 +22,7 @@ interface UserMapper {
 			#{user.age}
 		)
 	""")
-	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "id", type = User::class)
+	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "name", type = User::class)
 	fun insert(@Param("user") user: User)
 
 	@Insert("""
