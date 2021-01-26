@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import xyz.hyunto.core.interceptor.ConsistencyCheckInterceptor
 import java.lang.Exception
 import javax.annotation.Resource
 import javax.sql.DataSource
@@ -42,6 +43,7 @@ class DatabaseConfig {
 	private fun buildSqlSessionFactory(dataSource: DataSource): SqlSessionFactory {
 		val sqlSessionFactoryBean = SqlSessionFactoryBean()
 		sqlSessionFactoryBean.setDataSource(dataSource)
+		sqlSessionFactoryBean.setPlugins(ConsistencyCheckInterceptor())
 		return sqlSessionFactoryBean.`object` ?: throw Exception()
 	}
 }

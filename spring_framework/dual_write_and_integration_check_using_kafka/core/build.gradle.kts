@@ -39,6 +39,8 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:kafka")
 	testImplementation("org.testcontainers:mysql")
+
+	implementation("org.springframework.boot:spring-boot-starter-aop")
 }
 
 dependencyManagement {

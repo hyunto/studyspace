@@ -14,6 +14,6 @@ class TestController(
 	@GetMapping
 	fun test() {
 		println("Hello, world! - TestController.test()")
-		kafkaTemplate.send("test", "test","Hello, world! - sending message via kafka")
+		kafkaTemplate.send("test", "test", "Hello, world! - sending message via kafka")
 	}
 }
