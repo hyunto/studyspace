@@ -58,6 +58,7 @@ class ConsistencyCheckInterceptor() : Interceptor {
 	private fun processById(invocation: Invocation, annotation: ConsistencyCheckById) {
 		val parameterMap = getParameterMap(invocation)
 		val id: Any = if (ClassUtils.isPrimitiveOrWrapper(annotation.type::class.java)) {
+			TODO("ClassUtils.isPrimitiveOrWrapper 가 동작하지 않음")
 			parameterMap[annotation.id]
 		} else {
 			parameterMap.values.firstOrNull { it::class == annotation.type }?.let { getId(it, annotation.id) }
@@ -68,7 +69,7 @@ class ConsistencyCheckInterceptor() : Interceptor {
 			"id" to id,
 			"action" to annotation.action
 		)
-		println(message)
+		println("message : $message")
 	}
 
 	private fun processByProperties(invocation: Invocation, annotation: ConsistencyCheckByProperties) {

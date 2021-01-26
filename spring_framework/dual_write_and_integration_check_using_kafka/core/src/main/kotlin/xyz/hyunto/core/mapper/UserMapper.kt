@@ -48,7 +48,7 @@ interface UserMapper {
 			#{age}
 		)
 	""")
-	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "id", type = Int::class)
+	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "name", type = Int::class)
 	fun insertByValue(@Param("name") name: String, @Param("age") age: Int)
 
 	@Select("""

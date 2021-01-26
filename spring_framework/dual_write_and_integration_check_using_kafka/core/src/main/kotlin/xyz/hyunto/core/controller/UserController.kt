@@ -15,8 +15,8 @@ class UserController(
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	fun insert(@RequestBody user: User) {
-		userMapper.insert(user)
-//		userMapper.insertByValue(user.name, user.age)
+//		userMapper.insert(user)
+		userMapper.insertByValue(user.name, user.age)
 	}
 
 	@PutMapping("/{id}")
