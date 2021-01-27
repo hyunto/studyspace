@@ -17,19 +17,14 @@ import kotlin.reflect.full.memberFunctions
 class ConsistencyCheckInterceptor() : Interceptor {
 
 	override fun intercept(invocation: Invocation?): Any {
-
 		if (invocation == null) {
 			throw RuntimeException("Invocation is null")
 		}
-
-		println("##### ConsistencyCheckInterceptor #####")
 
 		when (val annotation = getAnnotation(invocation)) {
 			is ConsistencyCheckById -> processById(invocation, annotation)
 			is ConsistencyCheckByProperties -> processByProperties(invocation, annotation)
 		}
-
-		println("######")
 
 		return invocation.proceed()
 	}
@@ -57,8 +52,7 @@ class ConsistencyCheckInterceptor() : Interceptor {
 
 	private fun processById(invocation: Invocation, annotation: ConsistencyCheckById) {
 		val parameterMap = getParameterMap(invocation)
-		val id: Any = if (ClassUtils.isPrimitiveOrWrapper(annotation.type::class.java)) {
-			TODO("ClassUtils.isPrimitiveOrWrapper 가 동작하지 않음")
+		val id: Any = if (ClassUtils.isPrimitiveOrWrapper(annotation.type.java)) {
 			parameterMap[annotation.id]
 		} else {
 			parameterMap.values.firstOrNull { it::class == annotation.type }?.let { getId(it, annotation.id) }
@@ -70,13 +64,24 @@ class ConsistencyCheckInterceptor() : Interceptor {
 			"action" to annotation.action
 		)
 		println("message : $message")
+
+		// TODO: 카프카로 메시지 전송
 	}
 
 	private fun processByProperties(invocation: Invocation, annotation: ConsistencyCheckByProperties) {
-		println("*** ConsistencyCheckByProperties ***")
-		println(annotation.tableName.value)
-		println(annotation.action)
-		println(annotation.properties)
+		val parameterMap = getParameterMap(invocation)
+		val data = mutableMapOf<String, String>()
+		annotation.properties.toList()
+			.forEach { parameterMap[it]?.run { data[it] = this.toString() } ?: throw RuntimeException("Parameter named '$it' is null") }
+
+		val message = mapOf(
+			"table" to annotation.tableName,
+			"action" to annotation.action,
+			"data" to data
+		)
+		println("message : $message")
+
+		// TODO: 카프카로 메시지 전송
 	}
 
 }

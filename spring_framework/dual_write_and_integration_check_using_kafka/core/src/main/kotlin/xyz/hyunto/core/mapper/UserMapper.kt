@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.*
 import org.springframework.stereotype.Repository
 import xyz.hyunto.core.config.database.MySql1Mapper
 import xyz.hyunto.core.interceptor.ConsistencyCheckById
+import xyz.hyunto.core.interceptor.ConsistencyCheckByProperties
 import xyz.hyunto.core.model.Action
 import xyz.hyunto.core.model.TableName
 import xyz.hyunto.core.model.User
@@ -74,6 +75,13 @@ interface UserMapper {
 	""")
 	@ConsistencyCheckById(tableName = TableName.USER, action = Action.DELETE, id = "id", type = Int::class)
 	fun delete(@Param("id") id: Long)
+
+	@Delete("""
+		DELETE FROM user
+		WHERE name = #{name}
+	""")
+	@ConsistencyCheckByProperties(tableName = TableName.USER, action = Action.DELETE, properties = ["name"])
+	fun deleteByName(@Param("name") name: String)
 
 	@Select("""
 		SELECT

@@ -1,8 +1,10 @@
 package xyz.hyunto.core.controller
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
+import xyz.hyunto.core.mapper.GroupJavaMapper
 import xyz.hyunto.core.mapper.UserMapper
 import xyz.hyunto.core.model.User
 
@@ -29,6 +31,15 @@ class UserController(
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	fun delete(@PathVariable id: Long) {
 		userMapper.delete(id)
+	}
+
+	@DeleteMapping
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	fun deleteBy(@RequestParam(required = false) name: String) {
+		if (name == null) {
+			throw HttpClientErrorException(HttpStatus.BAD_REQUEST)
+		}
+		userMapper.deleteByName(name)
 	}
 
 	@GetMapping("/{id}")
