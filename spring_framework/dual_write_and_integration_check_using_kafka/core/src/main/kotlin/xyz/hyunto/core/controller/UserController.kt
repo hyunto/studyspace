@@ -1,10 +1,8 @@
 package xyz.hyunto.core.controller
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
-import xyz.hyunto.core.mapper.GroupJavaMapper
 import xyz.hyunto.core.mapper.UserMapper
 import xyz.hyunto.core.model.User
 
