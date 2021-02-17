@@ -13,26 +13,18 @@ abstract class AbstractConsistencyCheckService<out T>(
 		val data1 = getFromMySql1(message.targetId)
 		val data2 = getFromMySql2(message.targetId)
 
-		val isInconsistency = when (message.action) {
-			Action.INSERT -> deepDiff(data1, data2)
-			Action.UPDATE -> deepDiff(data1, data2)
+		val isEqual = when (message.action) {
+			Action.INSERT -> (data1 != null && data2 != null) && (data1 == data2)
+			Action.UPDATE -> (data1 != null && data2 != null) && (data1 == data2)
 			Action.DELETE -> data1 == null && data2 == null
 		}
 
-		if (isInconsistency) writeInconsistencyLog(message)
-	}
-
-	private fun deepDiff(data1: T?, data2: T?): Boolean {
-		if (data1 == null || data2 == null) {
-			return false
-		}
-		TODO("리플렉션으로 데이터 클래스 값 비교")
-		return true
+		if (!isEqual) writeInconsistencyLog(message)
 	}
 
 	private fun writeInconsistencyLog(message: ConsistencyCheckQueueMessage) {
 		with(message) {
-			dualWriteInconsistencyMapper.insert(TableName.valueOf(targetTable), targetId, action)
+			dualWriteInconsistencyMapper.insert(TableName.valueOf(tableName.value), targetId, action)
 		}
 	}
 

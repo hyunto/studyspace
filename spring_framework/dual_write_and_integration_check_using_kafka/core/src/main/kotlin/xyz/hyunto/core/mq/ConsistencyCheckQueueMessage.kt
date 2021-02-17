@@ -1,7 +1,7 @@
-package xyz.hyunto.async.message
+package xyz.hyunto.core.mq
 
-import xyz.hyunto.async.model.enums.Action
-import xyz.hyunto.async.model.enums.TableName
+import xyz.hyunto.core.model.Action
+import xyz.hyunto.core.model.TableName
 import java.time.ZonedDateTime
 
 data class ConsistencyCheckQueueMessage(

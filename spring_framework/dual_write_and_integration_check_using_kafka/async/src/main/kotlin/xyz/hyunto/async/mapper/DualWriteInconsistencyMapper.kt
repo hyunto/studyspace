@@ -15,8 +15,10 @@ interface DualWriteInconsistencyMapper {
 	@Insert("""
 		INSERT INTO dual_write_inconsistency(
 			target_table, 
-			target_id, 
-			action
+			target_id,
+			properties,
+			action,
+			action_datetime
 		) VALUES (
 			#{tableName},
 			#{targetId},
@@ -24,7 +26,8 @@ interface DualWriteInconsistencyMapper {
 		) 
 	""")
 	fun insert(@Param("tableName") tableName: TableName,
-			   @Param("targetId") targetId: Long,
+			   @Param("targetId") targetId: Long?,
+			   @Pa
 			   @Param("action") action: Action)
 
 }
