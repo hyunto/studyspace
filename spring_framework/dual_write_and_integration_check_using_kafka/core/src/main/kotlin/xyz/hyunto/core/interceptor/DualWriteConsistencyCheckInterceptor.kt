@@ -9,10 +9,7 @@ import org.apache.ibatis.plugin.Invocation
 import org.apache.ibatis.plugin.Signature
 import java.lang.RuntimeException
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.full.memberFunctions
-import kotlin.reflect.full.memberProperties
 
 @Intercepts(
 	Signature(type = Executor::class, method = "update", args = [MappedStatement::class, Object::class])
@@ -26,37 +23,39 @@ class DualWriteConsistencyCheckInterceptor : Interceptor {
 		val annotation = getAnnotation(invocation) ?: invocation.proceed() as DualWriteConsistencyCheck
 		val parameterMap = getParameterMap(invocation)
 
-		val data = mutableMapOf<String, String>()
-		val dataList = mutableListOf<Map<String, String>>()
+		val params = mutableListOf<Map<String, String>>()
 		annotation.params.forEach { param ->
 			val paramValue = parameterMap[param.name] ?: return@forEach
-			println(paramValue)
-
+			val data = mutableMapOf<String, String>()
 			if (param.subParams.isEmpty()) {
 				// 파라미터가 Primitive 타입
 				data[param.name] = paramValue.toString()
+				params.add(data)
 			} else if (param.subParams.isNotEmpty() && !param.isCollection) {
 				// 파라미터가 Object 타입
 				param.subParams.forEach { subParam ->
 					data[subParam.name] = getValueOfField(paramValue, subParam.name)
 				}
+				params.add(data)
 			} else if (param.subParams.isNotEmpty() && param.isCollection) {
 				// 파라미터가 Collection 타입
-
 				(paramValue as ArrayList<*>).forEach {
-					println(it)
-					val tempData = mutableMapOf<String, String>()
 					param.subParams.forEach { subParam ->
-						tempData[subParam.name] = getValueOfField(it, subParam.name)
+						data[subParam.name] = getValueOfField(it, subParam.name)
 					}
-					dataList.add(tempData)
+					params.add(data)
 				}
 			}
 		}
 
 		println("### Result ###")
-		println(data)
-		println(dataList)
+		val message = Message(
+			tableName = annotation.tableName,
+			action = annotation.action,
+			query = annotation.query,
+			params = params
+		)
+		println(message)
 
 		return invocation.proceed()
 	}

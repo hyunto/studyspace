@@ -7,10 +7,5 @@ data class Message(
 	val tableName: TableName,
 	val action: Action,
 	val query: String,
-	val params: List<Data>
-)
-
-data class Data(
-	val name: String,
-	val value: Any
+	val params: List<Map<String, String>>
 )
