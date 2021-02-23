@@ -20,11 +20,15 @@ import kotlin.reflect.full.memberFunctions
 )
 class DualWriteConsistencyCheckInterceptor : Interceptor {
 
+	companion object {
+		val ACCEPTED_SQL_COMMAND_TYPES = listOf<SqlCommandType>(SqlCommandType.INSERT, SqlCommandType.UPDATE, SqlCommandType.DELETE)
+	}
+
 	override fun intercept(invocation: Invocation?): Any {
 		println("### DualWriteConsistencyCheckInterceptor ###")
 		if (invocation == null) throw RuntimeException("Invocation cannot be null")
 
-		if (!listOf(SqlCommandType.INSERT, SqlCommandType.UPDATE, SqlCommandType.DELETE).contains(getMappedStatement(invocation).sqlCommandType)) {
+		if (!ACCEPTED_SQL_COMMAND_TYPES.contains(getMappedStatement(invocation).sqlCommandType)) {
 			invocation.proceed()
 		}
 
@@ -35,6 +39,7 @@ class DualWriteConsistencyCheckInterceptor : Interceptor {
 		annotation.params.forEach { param ->
 			val paramValue = parameterMap[param.name] ?: return@forEach
 
+			// TODO: if문 조건절 순서 조정 및 예외 처리 필요
 			if (param.subParams.isEmpty()) {
 				// 파라미터가 Primitive 타입
 				val key = if (param.mappingName.isNotBlank()) {
