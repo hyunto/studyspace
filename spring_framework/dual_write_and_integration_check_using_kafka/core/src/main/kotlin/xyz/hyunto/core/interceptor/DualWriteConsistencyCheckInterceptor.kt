@@ -3,22 +3,30 @@ package xyz.hyunto.core.interceptor
 import org.apache.ibatis.binding.MapperMethod
 import org.apache.ibatis.executor.Executor
 import org.apache.ibatis.mapping.MappedStatement
+import org.apache.ibatis.mapping.SqlCommandType
 import org.apache.ibatis.plugin.Interceptor
 import org.apache.ibatis.plugin.Intercepts
 import org.apache.ibatis.plugin.Invocation
 import org.apache.ibatis.plugin.Signature
+import org.apache.ibatis.session.ResultHandler
+import org.apache.ibatis.session.RowBounds
 import java.lang.RuntimeException
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberFunctions
 
 @Intercepts(
-	Signature(type = Executor::class, method = "update", args = [MappedStatement::class, Object::class])
+	Signature(type = Executor::class, method = "update", args = [MappedStatement::class, Object::class]),
+	Signature(type = Executor::class, method = "query", args = [MappedStatement::class, Object::class, RowBounds::class, ResultHandler::class])
 )
 class DualWriteConsistencyCheckInterceptor : Interceptor {
 
 	override fun intercept(invocation: Invocation?): Any {
 		println("### DualWriteConsistencyCheckInterceptor ###")
 		if (invocation == null) throw RuntimeException("Invocation cannot be null")
+
+		if (!listOf(SqlCommandType.INSERT, SqlCommandType.UPDATE, SqlCommandType.DELETE).contains(getMappedStatement(invocation).sqlCommandType)) {
+			invocation.proceed()
+		}
 
 		val annotation = getAnnotation(invocation) ?: invocation.proceed() as DualWriteConsistencyCheck
 		val parameterMap = getParameterMap(invocation)
@@ -62,7 +70,8 @@ class DualWriteConsistencyCheckInterceptor : Interceptor {
 			println("# 카프카 메시지 전송")
 		}
 
-		return invocation.proceed()
+		throw RuntimeException("테스트 중...")
+//		return invocation.proceed()
 	}
 
 	private fun getSubParam(instance: Any, param: QueryParam): Map<String, String> {
@@ -84,13 +93,17 @@ class DualWriteConsistencyCheckInterceptor : Interceptor {
 	}
 
 	private fun getAnnotation(invocation: Invocation): DualWriteConsistencyCheck? {
-		val mappedStatement = invocation.args[0] as MappedStatement
+		val mappedStatement = getMappedStatement(invocation)
 		val className = mappedStatement.id.substringBeforeLast(".")
 		val methodName = mappedStatement.id.substringAfterLast(".")
 
 		val clazz = Class.forName(className).kotlin
 		val method = clazz.memberFunctions.firstOrNull { it.name == methodName } ?: throw RuntimeException("cannot find method (expected: $methodName)")
 		return method.annotations.firstOrNull { it.annotationClass == DualWriteConsistencyCheck::class } as? DualWriteConsistencyCheck
+	}
+
+	private fun getMappedStatement(invocation: Invocation): MappedStatement {
+		return invocation.args[0] as MappedStatement
 	}
 
 	private fun getParameterMap(invocation: Invocation): MapperMethod.ParamMap<*> {

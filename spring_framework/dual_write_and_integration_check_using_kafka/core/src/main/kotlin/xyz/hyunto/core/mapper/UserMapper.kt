@@ -94,6 +94,12 @@ interface UserMapper {
 			id = #{user.id}
 	""")
 	@ConsistencyCheckById(tableName = TableName.USER, action = Action.UPDATE, id = "id", type = User::class)
+	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.UPDATE, query = "selectById", params = [
+		QueryParam(name = "user", subParams = [
+			QuerySubParam(name = "id"),
+			QuerySubParam(name = "name")
+		])
+	])
 	fun update(@Param("user") user: User)
 
 	@Delete("""
@@ -119,5 +125,18 @@ interface UserMapper {
 		WHERE id = #{id}
 	""")
 	fun selectById(@Param("id") id: Long): User?
+
+	@Select("""<script>
+		DELETE FROM user
+		WHERE name = #{name}
+		AND id IN <foreach collection='ids' item='id' open='(' separator=',' close=')'>
+			#{id}
+		</foreach>
+	</script>""")
+	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.DELETE, query = "selectById", params = [
+		QueryParam(name = "name"),
+		QueryParam(name = "ids")
+	])
+	fun deleteByNameAndIds(name: String, ids: List<Long>): List<User>
 
 }

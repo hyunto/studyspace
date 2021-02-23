@@ -56,4 +56,17 @@ class UserController(
 		return userMapper.selectById(id) ?: throw HttpClientErrorException(HttpStatus.NOT_FOUND)
 	}
 
+	@DeleteMapping("/by-name-and-ids")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	fun deleteByNameAndIds(@RequestBody request: NameAndIdsRequest){
+		with(request) {
+			userMapper.deleteByNameAndIds(name, ids)
+		}
+	}
+
+	data class NameAndIdsRequest(
+		val name: String,
+		val ids: List<Long>
+	)
+
 }
