@@ -24,9 +24,9 @@ interface UserMapper {
 	""")
 	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "name", type = User::class)
 	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
-		QueryParam(name = "user", isCollection = false, subParams = [
+		QueryParam(name = "user", subParams = [
 			QuerySubParam(name = "name"),
-			QuerySubParam(name = "age")
+			QuerySubParam(name = "age", mappingName = "mappingAge")
 		])
 	])
 	fun insert(@Param("user") user: User)
@@ -57,7 +57,7 @@ interface UserMapper {
 	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "name", type = Int::class)
 	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
 		QueryParam(name = "name"),
-		QueryParam(name = "age")
+		QueryParam(name = "age", mappingName = "mappingAge")
 	])
 	fun insertByValue(@Param("name") name: String, @Param("age") age: Int)
 
@@ -72,9 +72,9 @@ interface UserMapper {
 		</foreach>
 	</script>""")
 	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "list", params = [
-		QueryParam(name = "users", isCollection = true, subParams = [
+		QueryParam(name = "users", subParams = [
 			QuerySubParam(name = "name"),
-			QuerySubParam(name = "age")
+			QuerySubParam(name = "age", mappingName = "mappingAge")
 		])
 	])
 	fun inserts(@Param("users") users: List<User>)

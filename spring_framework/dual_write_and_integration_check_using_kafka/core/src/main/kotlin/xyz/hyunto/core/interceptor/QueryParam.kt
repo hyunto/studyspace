@@ -4,6 +4,6 @@ import kotlin.reflect.KClass
 
 annotation class QueryParam(
 	val name: String,
-	val isCollection: Boolean = false,
+	val mappingName: String = "",
 	val subParams: Array<QuerySubParam> = []
 )

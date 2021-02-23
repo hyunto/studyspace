@@ -26,24 +26,24 @@ class DualWriteConsistencyCheckInterceptor : Interceptor {
 		val params = mutableListOf<Map<String, String>>()
 		annotation.params.forEach { param ->
 			val paramValue = parameterMap[param.name] ?: return@forEach
-			val data = mutableMapOf<String, String>()
+
 			if (param.subParams.isEmpty()) {
 				// 파라미터가 Primitive 타입
-				data[param.name] = paramValue.toString()
-				params.add(data)
-			} else if (param.subParams.isNotEmpty() && !param.isCollection) {
-				// 파라미터가 Object 타입
-				param.subParams.forEach { subParam ->
-					data[subParam.name] = getValueOfField(paramValue, subParam.name)
+				val key = if (param.mappingName.isNotBlank()) {
+					param.mappingName
+				} else {
+					param.name
 				}
-				params.add(data)
-			} else if (param.subParams.isNotEmpty() && param.isCollection) {
-				// 파라미터가 Collection 타입
-				(paramValue as ArrayList<*>).forEach {
-					param.subParams.forEach { subParam ->
-						data[subParam.name] = getValueOfField(it, subParam.name)
+				params.add(mapOf(key to paramValue.toString()))
+			} else {
+				if (paramValue is ArrayList<*>) {
+					// 파라미터가 Collection 타입
+					(paramValue as ArrayList<*>).forEach {
+						params.add(getSubParam(it, param))
 					}
-					params.add(data)
+				} else {
+					// 파라미터가 Object 타입
+					params.add(getSubParam(paramValue, param))
 				}
 			}
 		}
@@ -58,6 +58,19 @@ class DualWriteConsistencyCheckInterceptor : Interceptor {
 		println(message)
 
 		return invocation.proceed()
+	}
+
+	private fun getSubParam(instance: Any, param: QueryParam): Map<String, String> {
+		val result = mutableMapOf<String, String>()
+		param.subParams.forEach { subParam ->
+			val key = if (subParam.mappingName.isNotBlank()) {
+				subParam.mappingName
+			} else {
+				subParam.name
+			}
+			result[key] = getValueOfField(instance, subParam.name)
+		}
+		return result
 	}
 
 	private fun getValueOfField(instance: Any, propertyName: String): String {
