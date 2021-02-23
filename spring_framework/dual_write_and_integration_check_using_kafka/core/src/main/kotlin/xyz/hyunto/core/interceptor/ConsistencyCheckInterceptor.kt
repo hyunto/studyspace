@@ -11,12 +11,15 @@ import org.springframework.util.ClassUtils
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberFunctions
 
+@Deprecated(message = "쿼리명 + 파라미터 목록 기반으로 다시 개발 예정")
 @Intercepts(
 	Signature(type = Executor::class, method = "update", args = [MappedStatement::class, Object::class])
 )
 class ConsistencyCheckInterceptor() : Interceptor {
 
 	override fun intercept(invocation: Invocation?): Any {
+		println("### ConsistencyCheckInterceptor ###")
+
 		if (invocation == null) {
 			throw RuntimeException("Invocation is null")
 		}
@@ -24,12 +27,13 @@ class ConsistencyCheckInterceptor() : Interceptor {
 		when (val annotation = getAnnotation(invocation)) {
 			is ConsistencyCheckById -> processById(invocation, annotation)
 			is ConsistencyCheckByProperties -> processByProperties(invocation, annotation)
+			else -> invocation.proceed()
 		}
 
 		return invocation.proceed()
 	}
 
-	private fun getAnnotation(invocation: Invocation): Any {
+	private fun getAnnotation(invocation: Invocation): Any? {
 		val mappedStatement = invocation.args[0] as MappedStatement
 		val className = mappedStatement.id.substringBeforeLast(".")
 		val methodName = mappedStatement.id.substringAfterLast(".")
@@ -38,7 +42,6 @@ class ConsistencyCheckInterceptor() : Interceptor {
 		val method = clazz.memberFunctions.firstOrNull { it.name == methodName } ?: throw RuntimeException("cannot find method (expected: $methodName)")
 		return method.annotations.firstOrNull { it.annotationClass == ConsistencyCheckById::class } as? ConsistencyCheckById
 			?: method.annotations.firstOrNull { it.annotationClass == ConsistencyCheckByProperties::class } as? ConsistencyCheckByProperties
-			?: throw RuntimeException("cannot find annotation (expected: ${ConsistencyCheckById::class} or ${ConsistencyCheckByProperties::class})")
 	}
 
 	private fun getParameterMap(invocation: Invocation): MapperMethod.ParamMap<*> {

@@ -3,8 +3,7 @@ package xyz.hyunto.core.mapper
 import org.apache.ibatis.annotations.*
 import org.springframework.stereotype.Repository
 import xyz.hyunto.core.config.database.MySql1Mapper
-import xyz.hyunto.core.interceptor.ConsistencyCheckById
-import xyz.hyunto.core.interceptor.ConsistencyCheckByProperties
+import xyz.hyunto.core.interceptor.*
 import xyz.hyunto.core.model.Action
 import xyz.hyunto.core.model.TableName
 import xyz.hyunto.core.model.User
@@ -24,6 +23,12 @@ interface UserMapper {
 		)
 	""")
 	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "name", type = User::class)
+	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
+		QueryParam(name = "user", isCollection = false, subParams = [
+			QuerySubParam(name = "name"),
+			QuerySubParam(name = "age")
+		])
+	])
 	fun insert(@Param("user") user: User)
 
 	@Insert("""
@@ -50,7 +55,29 @@ interface UserMapper {
 		)
 	""")
 	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "name", type = Int::class)
+	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
+		QueryParam(name = "name"),
+		QueryParam(name = "age")
+	])
 	fun insertByValue(@Param("name") name: String, @Param("age") age: Int)
+
+	@Insert("""<script>
+		INSERT INTO user (
+			name,
+			age
+		) VALUES 
+		<foreach collection='users' item='user' open='(' separator='), (' close=')'>
+			#{user.name},
+			#{user.age}
+		</foreach>
+	</script>""")
+	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "list", params = [
+		QueryParam(name = "users", isCollection = true, subParams = [
+			QuerySubParam(name = "name"),
+			QuerySubParam(name = "age")
+		])
+	])
+	fun inserts(@Param("users") users: List<User>)
 
 	@Select("""
 		SELECT LAST_INSERT_ID()

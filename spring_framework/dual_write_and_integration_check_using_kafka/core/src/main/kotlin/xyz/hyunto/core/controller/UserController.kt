@@ -15,8 +15,19 @@ class UserController(
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	fun insert(@RequestBody user: User) {
-//		userMapper.insert(user)
+		userMapper.insert(user)
+	}
+
+	@PostMapping("/by-value")
+	@ResponseStatus(HttpStatus.CREATED)
+	fun insertByValue(@RequestBody user: User) {
 		userMapper.insertByValue(user.name, user.age)
+	}
+
+	@PostMapping("/multiple")
+	@ResponseStatus(HttpStatus.CREATED)
+	fun inserts(@RequestBody users: List<User>) {
+		userMapper.inserts(users)
 	}
 
 	@PutMapping("/{id}")

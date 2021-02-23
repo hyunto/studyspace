@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import xyz.hyunto.core.interceptor.ConsistencyCheckInterceptor
+import xyz.hyunto.core.interceptor.DualWriteConsistencyCheck
+import xyz.hyunto.core.interceptor.DualWriteConsistencyCheckInterceptor
 import java.lang.Exception
 import javax.annotation.Resource
 import javax.sql.DataSource
@@ -46,6 +48,7 @@ class DatabaseConfig {
 		val sqlSessionFactoryBean = SqlSessionFactoryBean()
 		sqlSessionFactoryBean.setDataSource(dataSource)
 		sqlSessionFactoryBean.setPlugins(ConsistencyCheckInterceptor())
+		sqlSessionFactoryBean.setPlugins(DualWriteConsistencyCheckInterceptor())
 		return sqlSessionFactoryBean.`object` ?: throw Exception()
 	}
 }
