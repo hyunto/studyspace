@@ -38,7 +38,7 @@ class DualWriteConsistencyCheckInterceptor : Interceptor {
 			} else {
 				if (paramValue is ArrayList<*>) {
 					// 파라미터가 Collection 타입
-					(paramValue as ArrayList<*>).forEach {
+					paramValue.forEach {
 						params.add(getSubParam(it, param))
 					}
 				} else {
@@ -49,13 +49,18 @@ class DualWriteConsistencyCheckInterceptor : Interceptor {
 		}
 
 		println("### Result ###")
-		val message = Message(
+		val message = DualWriteConsistencyCheckMessage(
 			tableName = annotation.tableName,
 			action = annotation.action,
 			query = annotation.query,
 			params = params
 		)
 		println(message)
+
+		if (params.isNotEmpty()) {
+			// TODO: 카프카 메시지 전송
+			println("# 카프카 메시지 전송")
+		}
 
 		return invocation.proceed()
 	}

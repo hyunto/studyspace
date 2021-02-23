@@ -9,11 +9,11 @@ import xyz.hyunto.async.mapper.GroupMySql1Mapper
 import xyz.hyunto.async.mapper.GroupMySql2Mapper
 import xyz.hyunto.async.mapper.UserMySql1Mapper
 import xyz.hyunto.async.mapper.UserMySql2Mapper
-import xyz.hyunto.async.message.ConsistencyCheckQueueMessage
+import xyz.hyunto.async.message.DualWriteConsistencyCheckMessage
 import xyz.hyunto.async.model.enums.TableName
 
 @Service
-class ConsistencyCheckListener : MessageListener<String, ConsistencyCheckQueueMessage> {
+class DualWriteConsistencyCheckListener : MessageListener<String, DualWriteConsistencyCheckMessage> {
 
 	@Autowired
 	lateinit var userMySql1Mapper: UserMySql1Mapper
@@ -28,9 +28,11 @@ class ConsistencyCheckListener : MessageListener<String, ConsistencyCheckQueueMe
 	lateinit var groupMySql2Mapper: GroupMySql2Mapper
 
 	@KafkaListener(topics = ["consistency_check"], groupId = "consistency_check-group", containerFactory = "consistencyCheckKafkaListenerContainerFactory")
-	override fun onMessage(data: ConsumerRecord<String, ConsistencyCheckQueueMessage>?) {
+	override fun onMessage(data: ConsumerRecord<String, DualWriteConsistencyCheckMessage>?) {
 		val message = data?.value() ?: throw RuntimeException("ConsistencyCheckQueueMessage is null")
-		message.targetTable
+
+
+
 	}
 
 	private fun getMapper(targetTable: String): List<Any> {

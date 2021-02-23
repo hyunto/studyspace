@@ -1,7 +1,7 @@
 package xyz.hyunto.async.service
 
 import xyz.hyunto.async.mapper.DualWriteInconsistencyMapper
-import xyz.hyunto.async.message.ConsistencyCheckQueueMessage
+import xyz.hyunto.async.message.DualWriteConsistencyCheckMessage
 import xyz.hyunto.async.model.enums.Action
 import xyz.hyunto.async.model.enums.TableName
 
@@ -9,7 +9,7 @@ abstract class AbstractConsistencyCheckService<out T>(
 	private var dualWriteInconsistencyMapper: DualWriteInconsistencyMapper
 ) {
 
-	fun diff(message: ConsistencyCheckQueueMessage) {
+	fun diff(message: DualWriteConsistencyCheckMessage) {
 		val data1 = getFromMySql1(message.targetId)
 		val data2 = getFromMySql2(message.targetId)
 
@@ -22,7 +22,7 @@ abstract class AbstractConsistencyCheckService<out T>(
 		if (!isEqual) writeInconsistencyLog(message)
 	}
 
-	private fun writeInconsistencyLog(message: ConsistencyCheckQueueMessage) {
+	private fun writeInconsistencyLog(message: DualWriteConsistencyCheckMessage) {
 		with(message) {
 			dualWriteInconsistencyMapper.insert(TableName.valueOf(tableName.value), targetId, action)
 		}
