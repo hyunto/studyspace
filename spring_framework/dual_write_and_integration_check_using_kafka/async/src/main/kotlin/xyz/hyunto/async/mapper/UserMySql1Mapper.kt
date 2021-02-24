@@ -3,7 +3,7 @@ package xyz.hyunto.async.mapper
 import org.apache.ibatis.annotations.*
 import org.springframework.stereotype.Repository
 import xyz.hyunto.async.config.database.MySql1Mapper
-import xyz.hyunto.async.model.User
+import xyz.hyunto.core.model.User
 
 // language=SQL
 @MySql1Mapper

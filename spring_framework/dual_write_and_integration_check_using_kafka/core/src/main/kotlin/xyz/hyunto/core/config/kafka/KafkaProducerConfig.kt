@@ -9,6 +9,8 @@ import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
+import org.springframework.kafka.support.serializer.JsonSerializer
+import xyz.hyunto.core.interceptor.DualWriteConsistencyCheckMessage
 
 @Configuration
 @EnableKafka
@@ -23,6 +25,15 @@ class KafkaProducerConfig {
 			ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to address,
 			ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
 			ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java
+		))
+	}
+
+	@Bean
+	fun consistencyCheckProducerFactory(): ProducerFactory<String, DualWriteConsistencyCheckMessage> {
+		return DefaultKafkaProducerFactory(mapOf(
+			ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to address,
+			ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
+			ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JsonSerializer::class.java
 		))
 	}
 

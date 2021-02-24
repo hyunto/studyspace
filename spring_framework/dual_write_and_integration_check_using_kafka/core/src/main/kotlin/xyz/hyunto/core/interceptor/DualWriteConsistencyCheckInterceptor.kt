@@ -10,6 +10,9 @@ import org.apache.ibatis.plugin.Invocation
 import org.apache.ibatis.plugin.Signature
 import org.apache.ibatis.session.ResultHandler
 import org.apache.ibatis.session.RowBounds
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.stereotype.Component
 import java.lang.RuntimeException
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberFunctions
@@ -18,7 +21,11 @@ import kotlin.reflect.full.memberFunctions
 	Signature(type = Executor::class, method = "update", args = [MappedStatement::class, Object::class]),
 	Signature(type = Executor::class, method = "query", args = [MappedStatement::class, Object::class, RowBounds::class, ResultHandler::class])
 )
+@Component
 class DualWriteConsistencyCheckInterceptor : Interceptor {
+
+	@Autowired
+	lateinit var kafkaTemplate: KafkaTemplate<String, DualWriteConsistencyCheckMessage>
 
 	companion object {
 		val ACCEPTED_SQL_COMMAND_TYPES = listOf<SqlCommandType>(SqlCommandType.INSERT, SqlCommandType.UPDATE, SqlCommandType.DELETE)
@@ -71,12 +78,12 @@ class DualWriteConsistencyCheckInterceptor : Interceptor {
 		println(message)
 
 		if (params.isNotEmpty()) {
-			// TODO: 카프카 메시지 전송
 			println("# 카프카 메시지 전송")
+			kafkaTemplate.send("dual_write_check", "dual_write_check", message)
 		}
 
-		throw RuntimeException("테스트 중...")
-//		return invocation.proceed()
+//		throw RuntimeException("테스트 중...")
+		return invocation.proceed()
 	}
 
 	private fun getSubParam(instance: Any, param: QueryParam): Map<String, String> {

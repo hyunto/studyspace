@@ -9,8 +9,7 @@ import xyz.hyunto.async.mapper.GroupMySql1Mapper
 import xyz.hyunto.async.mapper.GroupMySql2Mapper
 import xyz.hyunto.async.mapper.UserMySql1Mapper
 import xyz.hyunto.async.mapper.UserMySql2Mapper
-import xyz.hyunto.async.message.DualWriteConsistencyCheckMessage
-import xyz.hyunto.async.model.enums.TableName
+import xyz.hyunto.core.interceptor.DualWriteConsistencyCheckMessage
 
 @Service
 class DualWriteConsistencyCheckListener : MessageListener<String, DualWriteConsistencyCheckMessage> {
@@ -27,19 +26,21 @@ class DualWriteConsistencyCheckListener : MessageListener<String, DualWriteConsi
 	@Autowired
 	lateinit var groupMySql2Mapper: GroupMySql2Mapper
 
-	@KafkaListener(topics = ["consistency_check"], groupId = "consistency_check-group", containerFactory = "consistencyCheckKafkaListenerContainerFactory")
+	@KafkaListener(topics = ["dual_write_check"], groupId = "consistency_check-group", containerFactory = "consistencyCheckKafkaListenerContainerFactory")
 	override fun onMessage(data: ConsumerRecord<String, DualWriteConsistencyCheckMessage>?) {
 		val message = data?.value() ?: throw RuntimeException("ConsistencyCheckQueueMessage is null")
 
+		println("### DualWriteConsistencyCheckListener")
+		println(message)
 
 
 	}
 
-	private fun getMapper(targetTable: String): List<Any> {
-		return when (TableName.valueOf(targetTable)) {
-			TableName.USER -> listOf(userMySql1Mapper, userMySql2Mapper)
-			TableName.GROUP -> listOf(groupMySql1Mapper, groupMySql2Mapper)
-			else -> throw RuntimeException()
-		}
-	}
+//	private fun getMapper(targetTable: String): List<Any> {
+//		return when (TableName.valueOf(targetTable)) {
+//			TableName.USER -> listOf(userMySql1Mapper, userMySql2Mapper)
+//			TableName.GROUP -> listOf(groupMySql1Mapper, groupMySql2Mapper)
+//			else -> throw RuntimeException()
+//		}
+//	}
 }

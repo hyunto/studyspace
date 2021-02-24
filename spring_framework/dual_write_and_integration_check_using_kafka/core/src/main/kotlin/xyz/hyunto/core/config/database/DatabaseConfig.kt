@@ -9,6 +9,7 @@ import org.mybatis.spring.annotation.MapperScans
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import xyz.hyunto.core.interceptor.ConsistencyCheckInterceptor
@@ -44,11 +45,16 @@ class DatabaseConfig {
 		return buildSqlSessionFactory(mysql2DataSource)
 	}
 
+	@Bean
+	fun dualWriteConsistencyInsterceptor(kafkaTemplate: KafkaTemplate<String, DualWriteConsistencyCheckInterceptor>): DualWriteConsistencyCheckInterceptor {
+		return DualWriteConsistencyCheckInterceptor(kafkaTemplate)
+	}
+
 	private fun buildSqlSessionFactory(dataSource: DataSource): SqlSessionFactory {
 		val sqlSessionFactoryBean = SqlSessionFactoryBean()
 		sqlSessionFactoryBean.setDataSource(dataSource)
-		sqlSessionFactoryBean.setPlugins(ConsistencyCheckInterceptor())
-		sqlSessionFactoryBean.setPlugins(DualWriteConsistencyCheckInterceptor())
+//		sqlSessionFactoryBean.setPlugins(ConsistencyCheckInterceptor())
+		sqlSessionFactoryBean.setPlugins(dualWriteConsistencyInsterceptor())
 		return sqlSessionFactoryBean.`object` ?: throw Exception()
 	}
 }

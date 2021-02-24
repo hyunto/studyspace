@@ -22,7 +22,6 @@ interface UserMapper {
 			#{user.age}
 		)
 	""")
-	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "name", type = User::class)
 	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
 		QueryParam(name = "user", subParams = [
 			QuerySubParam(name = "name"),
@@ -42,7 +41,7 @@ interface UserMapper {
 			#{user.age}
 		)
 	""")
-	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "id", type = User::class)
+//	@SelectKey()
 	fun insertWithId(@Param("user") user: User)
 
 	@Insert("""
@@ -54,7 +53,6 @@ interface UserMapper {
 			#{age}
 		)
 	""")
-	@ConsistencyCheckById(tableName = TableName.USER, action = Action.INSERT, id = "name", type = Int::class)
 	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
 		QueryParam(name = "name"),
 		QueryParam(name = "age", mappingName = "mappingAge")
@@ -63,10 +61,12 @@ interface UserMapper {
 
 	@Insert("""<script>
 		INSERT INTO user (
+			id,
 			name,
 			age
 		) VALUES 
 		<foreach collection='users' item='user' open='(' separator='), (' close=')'>
+			NULL,
 			#{user.name},
 			#{user.age}
 		</foreach>
@@ -93,7 +93,6 @@ interface UserMapper {
 		WHERE
 			id = #{user.id}
 	""")
-	@ConsistencyCheckById(tableName = TableName.USER, action = Action.UPDATE, id = "id", type = User::class)
 	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.UPDATE, query = "selectById", params = [
 		QueryParam(name = "user", subParams = [
 			QuerySubParam(name = "id"),
@@ -106,14 +105,12 @@ interface UserMapper {
 		DELETE FROM user
 		WHERE id = #{id}
 	""")
-	@ConsistencyCheckById(tableName = TableName.USER, action = Action.DELETE, id = "id", type = Int::class)
 	fun delete(@Param("id") id: Long)
 
 	@Delete("""
 		DELETE FROM user
 		WHERE name = #{name}
 	""")
-	@ConsistencyCheckByProperties(tableName = TableName.USER, action = Action.DELETE, properties = ["name"])
 	fun deleteByName(@Param("name") name: String)
 
 	@Select("""

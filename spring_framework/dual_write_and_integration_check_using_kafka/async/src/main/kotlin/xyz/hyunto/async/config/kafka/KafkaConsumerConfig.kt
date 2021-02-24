@@ -11,7 +11,8 @@ import org.springframework.kafka.config.KafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
-import xyz.hyunto.async.message.DualWriteConsistencyCheckMessage
+import org.springframework.kafka.support.serializer.JsonDeserializer
+import xyz.hyunto.core.interceptor.DualWriteConsistencyCheckMessage
 
 @Configuration
 @EnableKafka
@@ -42,7 +43,8 @@ class KafkaConsumerConfig {
 	fun consistencyCheckConsumerFactory(): ConsumerFactory<String, DualWriteConsistencyCheckMessage> {
 		return DefaultKafkaConsumerFactory(mapOf(
 			ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to address,
-			ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java
+			ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
+			ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to JsonDeserializer::class.java
 		))
 	}
 
