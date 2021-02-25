@@ -1,4 +1,4 @@
-package xyz.hyunto.core.interceptor
+package xyz.hyunto.core.interceptor.deprecated
 
 import org.apache.ibatis.binding.MapperMethod
 import org.apache.ibatis.executor.Executor

@@ -9,10 +9,10 @@ import xyz.hyunto.async.mapper.GroupMySql1Mapper
 import xyz.hyunto.async.mapper.GroupMySql2Mapper
 import xyz.hyunto.async.mapper.UserMySql1Mapper
 import xyz.hyunto.async.mapper.UserMySql2Mapper
-import xyz.hyunto.core.interceptor.DualWriteConsistencyCheckMessage
+import xyz.hyunto.core.interceptor.DualWriteCheckMessage
 
 @Service
-class DualWriteConsistencyCheckListener : MessageListener<String, DualWriteConsistencyCheckMessage> {
+class DualWriteConsistencyCheckListener : MessageListener<String, DualWriteCheckMessage> {
 
 	@Autowired
 	lateinit var userMySql1Mapper: UserMySql1Mapper
@@ -27,7 +27,7 @@ class DualWriteConsistencyCheckListener : MessageListener<String, DualWriteConsi
 	lateinit var groupMySql2Mapper: GroupMySql2Mapper
 
 	@KafkaListener(topics = ["dual_write_check"], groupId = "consistency_check-group", containerFactory = "consistencyCheckKafkaListenerContainerFactory")
-	override fun onMessage(data: ConsumerRecord<String, DualWriteConsistencyCheckMessage>?) {
+	override fun onMessage(data: ConsumerRecord<String, DualWriteCheckMessage>?) {
 		val message = data?.value() ?: throw RuntimeException("ConsistencyCheckQueueMessage is null")
 
 		println("### DualWriteConsistencyCheckListener")

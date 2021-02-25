@@ -1,4 +1,4 @@
-package xyz.hyunto.core.model
+package xyz.hyunto.core.interceptor.enums
 
 enum class TableName(
 	val value: String

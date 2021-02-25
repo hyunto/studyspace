@@ -5,11 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.listener.MessageListener
 import xyz.hyunto.async.mapper.UserMySql1Mapper
 import xyz.hyunto.async.mapper.UserMySql2Mapper
-import xyz.hyunto.core.interceptor.DualWriteConsistencyCheckMessage
-import xyz.hyunto.core.model.User
+import xyz.hyunto.core.interceptor.DualWriteCheckMessage
 
 //class UserConsistencyCheckService : MessageListener<String, DualWriteConsistencyCheckMessage>, AbstractConsistencyCheckService<User> {
-class UserConsistencyCheckService : MessageListener<String, DualWriteConsistencyCheckMessage> {
+class UserConsistencyCheckService : MessageListener<String, DualWriteCheckMessage> {
 
 	@Autowired
 	private lateinit var userMySql1Mapper: UserMySql1Mapper
@@ -18,7 +17,7 @@ class UserConsistencyCheckService : MessageListener<String, DualWriteConsistency
 	private lateinit var userMySql2Mapper: UserMySql2Mapper
 
 
-	override fun onMessage(data: ConsumerRecord<String, DualWriteConsistencyCheckMessage>?) {
+	override fun onMessage(data: ConsumerRecord<String, DualWriteCheckMessage>?) {
 		val message = data?.value() ?: throw RuntimeException("ConsistencyCheckQueueMessage is null")
 //		diff(message)
 	}

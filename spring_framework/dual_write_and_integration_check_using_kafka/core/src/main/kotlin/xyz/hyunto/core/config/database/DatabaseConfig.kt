@@ -2,20 +2,15 @@ package xyz.hyunto.core.config.database
 
 import com.zaxxer.hikari.HikariDataSource
 import org.apache.ibatis.session.SqlSessionFactory
-import org.apache.ibatis.session.SqlSessionFactoryBuilder
 import org.mybatis.spring.SqlSessionFactoryBean
 import org.mybatis.spring.annotation.MapperScan
 import org.mybatis.spring.annotation.MapperScans
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.EnableTransactionManagement
-import xyz.hyunto.core.interceptor.ConsistencyCheckInterceptor
-import xyz.hyunto.core.interceptor.DualWriteConsistencyCheck
-import xyz.hyunto.core.interceptor.DualWriteConsistencyCheckInterceptor
-import java.lang.Exception
+import xyz.hyunto.core.interceptor.DualWriteCheckInterceptor
 import javax.annotation.Resource
 import javax.sql.DataSource
 
@@ -45,16 +40,12 @@ class DatabaseConfig {
 		return buildSqlSessionFactory(mysql2DataSource)
 	}
 
-	@Bean
-	fun dualWriteConsistencyInsterceptor(kafkaTemplate: KafkaTemplate<String, DualWriteConsistencyCheckInterceptor>): DualWriteConsistencyCheckInterceptor {
-		return DualWriteConsistencyCheckInterceptor(kafkaTemplate)
-	}
 
 	private fun buildSqlSessionFactory(dataSource: DataSource): SqlSessionFactory {
 		val sqlSessionFactoryBean = SqlSessionFactoryBean()
 		sqlSessionFactoryBean.setDataSource(dataSource)
 //		sqlSessionFactoryBean.setPlugins(ConsistencyCheckInterceptor())
-		sqlSessionFactoryBean.setPlugins(dualWriteConsistencyInsterceptor())
+		sqlSessionFactoryBean.setPlugins(DualWriteCheckInterceptor())
 		return sqlSessionFactoryBean.`object` ?: throw Exception()
 	}
 }

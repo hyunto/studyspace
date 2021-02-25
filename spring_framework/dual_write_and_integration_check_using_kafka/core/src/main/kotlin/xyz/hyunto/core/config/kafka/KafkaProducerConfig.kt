@@ -10,7 +10,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JsonSerializer
-import xyz.hyunto.core.interceptor.DualWriteConsistencyCheckMessage
+import xyz.hyunto.core.interceptor.DualWriteCheckMessage
 
 @Configuration
 @EnableKafka
@@ -29,7 +29,7 @@ class KafkaProducerConfig {
 	}
 
 	@Bean
-	fun consistencyCheckProducerFactory(): ProducerFactory<String, DualWriteConsistencyCheckMessage> {
+	fun consistencyCheckProducerFactory(): ProducerFactory<String, DualWriteCheckMessage> {
 		return DefaultKafkaProducerFactory(mapOf(
 			ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to address,
 			ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,

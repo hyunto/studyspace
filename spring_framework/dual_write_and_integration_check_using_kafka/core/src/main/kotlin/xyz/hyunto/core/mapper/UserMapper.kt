@@ -3,9 +3,11 @@ package xyz.hyunto.core.mapper
 import org.apache.ibatis.annotations.*
 import org.springframework.stereotype.Repository
 import xyz.hyunto.core.config.database.MySql1Mapper
-import xyz.hyunto.core.interceptor.*
-import xyz.hyunto.core.model.Action
-import xyz.hyunto.core.model.TableName
+import xyz.hyunto.core.interceptor.annotations.DualWriteCheck
+import xyz.hyunto.core.interceptor.annotations.QueryParam
+import xyz.hyunto.core.interceptor.annotations.SubQueryParam
+import xyz.hyunto.core.interceptor.enums.Action
+import xyz.hyunto.core.interceptor.enums.TableName
 import xyz.hyunto.core.model.User
 
 // language=SQL
@@ -22,10 +24,10 @@ interface UserMapper {
 			#{user.age}
 		)
 	""")
-	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
-		QueryParam(name = "user", subParams = [
-			QuerySubParam(name = "name"),
-			QuerySubParam(name = "age", mappingName = "mappingAge")
+	@DualWriteCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
+		QueryParam(name = "user", subQueryParams = [
+			SubQueryParam(name = "name"),
+			SubQueryParam(name = "age", mappingName = "mappingAge")
 		])
 	])
 	fun insert(@Param("user") user: User)
@@ -53,7 +55,7 @@ interface UserMapper {
 			#{age}
 		)
 	""")
-	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
+	@DualWriteCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
 		QueryParam(name = "name"),
 		QueryParam(name = "age", mappingName = "mappingAge")
 	])
@@ -61,20 +63,18 @@ interface UserMapper {
 
 	@Insert("""<script>
 		INSERT INTO user (
-			id,
 			name,
 			age
 		) VALUES 
 		<foreach collection='users' item='user' open='(' separator='), (' close=')'>
-			NULL,
 			#{user.name},
 			#{user.age}
 		</foreach>
 	</script>""")
-	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.INSERT, query = "list", params = [
-		QueryParam(name = "users", subParams = [
-			QuerySubParam(name = "name"),
-			QuerySubParam(name = "age", mappingName = "mappingAge")
+	@DualWriteCheck(tableName = TableName.USER, action = Action.INSERT, query = "list", params = [
+		QueryParam(name = "users", subQueryParams = [
+			SubQueryParam(name = "name"),
+			SubQueryParam(name = "age", mappingName = "mappingAge")
 		])
 	])
 	fun inserts(@Param("users") users: List<User>)
@@ -93,10 +93,10 @@ interface UserMapper {
 		WHERE
 			id = #{user.id}
 	""")
-	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.UPDATE, query = "selectById", params = [
-		QueryParam(name = "user", subParams = [
-			QuerySubParam(name = "id"),
-			QuerySubParam(name = "name")
+	@DualWriteCheck(tableName = TableName.USER, action = Action.UPDATE, query = "selectById", params = [
+		QueryParam(name = "user", subQueryParams = [
+			SubQueryParam(name = "id"),
+			SubQueryParam(name = "name")
 		])
 	])
 	fun update(@Param("user") user: User)
@@ -130,7 +130,7 @@ interface UserMapper {
 			#{id}
 		</foreach>
 	</script>""")
-	@DualWriteConsistencyCheck(tableName = TableName.USER, action = Action.DELETE, query = "selectById", params = [
+	@DualWriteCheck(tableName = TableName.USER, action = Action.DELETE, query = "selectById", params = [
 		QueryParam(name = "name"),
 		QueryParam(name = "ids")
 	])

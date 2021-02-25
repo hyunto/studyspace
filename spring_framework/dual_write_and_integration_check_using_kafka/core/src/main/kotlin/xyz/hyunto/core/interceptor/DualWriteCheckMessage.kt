@@ -1,9 +1,9 @@
 package xyz.hyunto.core.interceptor
 
-import xyz.hyunto.core.model.Action
-import xyz.hyunto.core.model.TableName
+import xyz.hyunto.core.interceptor.enums.Action
+import xyz.hyunto.core.interceptor.enums.TableName
 
-data class DualWriteConsistencyCheckMessage(
+data class DualWriteCheckMessage(
 	val tableName: TableName,
 	val action: Action,
 	val query: String,

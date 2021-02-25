@@ -1,7 +1,5 @@
 package xyz.hyunto.async.service
 
-import xyz.hyunto.core.interceptor.DualWriteConsistencyCheckMessage
-
 abstract class AbstractConsistencyCheckService<out T>(
 ) {
 
