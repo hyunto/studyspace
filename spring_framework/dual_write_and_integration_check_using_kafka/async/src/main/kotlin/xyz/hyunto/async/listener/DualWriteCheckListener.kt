@@ -1,37 +1,31 @@
-package xyz.hyunto.async.service
+package xyz.hyunto.async.listener
 
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.listener.MessageListener
 import org.springframework.stereotype.Service
-import xyz.hyunto.async.mapper.GroupMySql1Mapper
-import xyz.hyunto.async.mapper.GroupMySql2Mapper
-import xyz.hyunto.async.mapper.UserMySql1Mapper
-import xyz.hyunto.async.mapper.UserMySql2Mapper
+import xyz.hyunto.async.mapper.UserMapper
+import xyz.hyunto.core.interceptor.DatabaseTypeHolder
 import xyz.hyunto.core.interceptor.DualWriteCheckMessage
 
 @Service
-class DualWriteConsistencyCheckListener : MessageListener<String, DualWriteCheckMessage> {
+class DualWriteCheckListener : MessageListener<String, DualWriteCheckMessage> {
 
 	@Autowired
-	lateinit var userMySql1Mapper: UserMySql1Mapper
+	private lateinit var userMapper: UserMapper
 
-	@Autowired
-	lateinit var userMySql2Mapper: UserMySql2Mapper
-
-	@Autowired
-	lateinit var groupMySql1Mapper: GroupMySql1Mapper
-
-	@Autowired
-	lateinit var groupMySql2Mapper: GroupMySql2Mapper
-
-	@KafkaListener(topics = ["dual_write_check"], groupId = "consistency_check-group", containerFactory = "consistencyCheckKafkaListenerContainerFactory")
+	@KafkaListener(topics = ["dual_write_check"], groupId = "dual_write_check", containerFactory = "consistencyCheckKafkaListenerContainerFactory")
 	override fun onMessage(data: ConsumerRecord<String, DualWriteCheckMessage>?) {
 		val message = data?.value() ?: throw RuntimeException("ConsistencyCheckQueueMessage is null")
 
 		println("### DualWriteConsistencyCheckListener")
 		println(message)
+
+		DatabaseTypeHolder.setMySql1()
+		println("MySQL1 : ${userMapper.selectById(1)}")
+		DatabaseTypeHolder.setMySql2()
+		println("MySQL2 : ${userMapper.selectById(1)}")
 
 
 	}

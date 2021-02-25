@@ -1,5 +1,6 @@
 package xyz.hyunto.async.service
 
+@Deprecated("Dynamic DI 방식으로 개발")
 abstract class AbstractConsistencyCheckService<out T>(
 ) {
 

@@ -1,4 +1,4 @@
-package xyz.hyunto.async.service
+package xyz.hyunto.async.listener
 
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener

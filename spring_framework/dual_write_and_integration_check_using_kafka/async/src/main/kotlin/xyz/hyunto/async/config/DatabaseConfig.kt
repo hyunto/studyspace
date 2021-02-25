@@ -1,23 +1,22 @@
-package xyz.hyunto.async.config.database
+package xyz.hyunto.async.config
 
 import com.zaxxer.hikari.HikariDataSource
 import org.apache.ibatis.session.SqlSessionFactory
-import org.apache.ibatis.session.SqlSessionFactoryBuilder
 import org.mybatis.spring.SqlSessionFactoryBean
 import org.mybatis.spring.annotation.MapperScan
 import org.mybatis.spring.annotation.MapperScans
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Primary
+import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
+import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.EnableTransactionManagement
-import java.lang.Exception
+import xyz.hyunto.core.interceptor.DatabaseType
 import javax.annotation.Resource
 import javax.sql.DataSource
 
 @Configuration
 @MapperScans(
-	MapperScan(annotationClass = MySql1Mapper::class, basePackages = ["xyz.hyunto"], sqlSessionFactoryRef = "mysql1SessionFactory"),
-	MapperScan(annotationClass = MySql2Mapper::class, basePackages = ["xyz.hyunto"], sqlSessionFactoryRef = "mysql2SessionFactory")
+	MapperScan(annotationClass = Repository::class, basePackages = ["xyz.hyunto.async.mapper"]),
 )
 @EnableTransactionManagement
 class DatabaseConfig {
@@ -29,19 +28,20 @@ class DatabaseConfig {
 	private lateinit var mysql2DataSource: HikariDataSource
 
 	@Bean
-	@Primary
-	fun mysql1SessionFactory(): SqlSessionFactory {
-		return buildSqlSessionFactory(mysql1DataSource)
+	fun routingDataSource(): DataSource {
+		val routingDataSource: AbstractRoutingDataSource = RoutingDataSource()
+		routingDataSource.setTargetDataSources(mapOf(
+			DatabaseType.MySQL1 to mysql1DataSource,
+			DatabaseType.MySQL2 to mysql2DataSource
+		))
+		return routingDataSource
 	}
 
 	@Bean
-	fun mysql2SessionFactory(): SqlSessionFactory {
-		return buildSqlSessionFactory(mysql2DataSource)
-	}
-
-	private fun buildSqlSessionFactory(dataSource: DataSource): SqlSessionFactory {
+	fun sqlSessionFactory(): SqlSessionFactory {
 		val sqlSessionFactoryBean = SqlSessionFactoryBean()
-		sqlSessionFactoryBean.setDataSource(dataSource)
+		sqlSessionFactoryBean.setDataSource(routingDataSource())
 		return sqlSessionFactoryBean.`object` ?: throw Exception()
 	}
+
 }

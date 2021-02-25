@@ -2,7 +2,6 @@ package xyz.hyunto.core.mapper
 
 import org.apache.ibatis.annotations.*
 import org.springframework.stereotype.Repository
-import xyz.hyunto.core.config.database.MySql1Mapper
 import xyz.hyunto.core.interceptor.annotations.DualWriteCheck
 import xyz.hyunto.core.interceptor.annotations.QueryParam
 import xyz.hyunto.core.interceptor.annotations.SubQueryParam
@@ -11,7 +10,6 @@ import xyz.hyunto.core.interceptor.enums.TableName
 import xyz.hyunto.core.model.User
 
 // language=SQL
-@MySql1Mapper
 @Repository
 interface UserMapper {
 

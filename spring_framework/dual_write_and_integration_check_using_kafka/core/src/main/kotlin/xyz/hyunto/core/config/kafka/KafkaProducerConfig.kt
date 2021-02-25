@@ -42,4 +42,9 @@ class KafkaProducerConfig {
 		return KafkaTemplate(producerFactory())
 	}
 
+	@Bean
+	fun dualWriteCheckKafkaTemplate(): KafkaTemplate<String, DualWriteCheckMessage> {
+		return KafkaTemplate(consistencyCheckProducerFactory())
+	}
+
 }

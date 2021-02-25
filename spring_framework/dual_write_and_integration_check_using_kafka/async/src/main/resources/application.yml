@@ -1,7 +1,13 @@
 server:
   port: 8091
 
+kafka:
+  server:
+    address: "localhost:9092"
+
 spring:
+  flyway:
+    enabled: false
   datasource:
     hikari:
       mysql1:
@@ -14,7 +20,3 @@ spring:
         username: "root"
         password: "P@ssw0rd"
         driver-class-name: com.mysql.cj.jdbc.Driver
-
-kafka:
-  server:
-    address: "localhost:9092"

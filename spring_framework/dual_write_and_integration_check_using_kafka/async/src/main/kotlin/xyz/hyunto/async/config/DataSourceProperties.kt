@@ -1,4 +1,4 @@
-package xyz.hyunto.async.config.database
+package xyz.hyunto.async.config
 
 import com.zaxxer.hikari.HikariDataSource
 import org.springframework.beans.factory.annotation.Qualifier

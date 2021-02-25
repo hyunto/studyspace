@@ -9,5 +9,4 @@
 
 rootProject.name = "dual_write_and_integration_check_using_kafka"
 
-include("core")
-include("async")
+include("core", "async")

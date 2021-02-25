@@ -1,14 +1,16 @@
 package xyz.hyunto.core.controller
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
+import xyz.hyunto.core.interceptor.DatabaseTypeHolder
 import xyz.hyunto.core.mapper.UserMapper
 import xyz.hyunto.core.model.User
 
 @RestController
 @RequestMapping("/users")
-class UserController(
+class UserController @Autowired constructor(
 	val userMapper: UserMapper
 ) {
 
@@ -53,6 +55,12 @@ class UserController(
 
 	@GetMapping("/{id}")
 	fun get(@PathVariable id: Long): User {
+//		println("### Multiple Datasource Get Test ###")
+//		DatabaseTypeHolder.setMySql1()
+//		println(userMapper.selectById(id))
+//		DatabaseTypeHolder.setMySql2()
+//		println(userMapper.selectById(id))
+
 		return userMapper.selectById(id) ?: throw HttpClientErrorException(HttpStatus.NOT_FOUND)
 	}
 

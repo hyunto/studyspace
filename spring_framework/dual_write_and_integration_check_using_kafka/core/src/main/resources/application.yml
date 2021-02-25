@@ -27,6 +27,9 @@ spring:
 #      schemas: ""
 #      url: "jdbc:mysql://localhost:11001/test"
 #      locations: "classpath:db/migration"
+flyway:
+  migrate:
+    enabled: true
 
 kafka:
   server:

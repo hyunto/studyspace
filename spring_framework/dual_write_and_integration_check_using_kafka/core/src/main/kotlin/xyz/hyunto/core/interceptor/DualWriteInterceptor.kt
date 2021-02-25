@@ -1,7 +1,9 @@
 package xyz.hyunto.core.interceptor
 
 import org.apache.ibatis.binding.MapperMethod
+import org.apache.ibatis.cache.CacheKey
 import org.apache.ibatis.executor.Executor
+import org.apache.ibatis.mapping.BoundSql
 import org.apache.ibatis.mapping.MappedStatement
 import org.apache.ibatis.mapping.SqlCommandType
 import org.apache.ibatis.plugin.Interceptor
@@ -10,6 +12,8 @@ import org.apache.ibatis.plugin.Invocation
 import org.apache.ibatis.plugin.Signature
 import org.apache.ibatis.session.ResultHandler
 import org.apache.ibatis.session.RowBounds
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import xyz.hyunto.core.interceptor.annotations.DualWriteCheck
 import xyz.hyunto.core.interceptor.annotations.QueryParam
@@ -19,34 +23,54 @@ import kotlin.reflect.full.memberFunctions
 
 @Intercepts(
 	Signature(type = Executor::class, method = "update", args = [MappedStatement::class, Object::class]),
-	Signature(type = Executor::class, method = "query", args = [MappedStatement::class, Object::class, RowBounds::class, ResultHandler::class])
+	Signature(type = Executor::class, method = "query", args = [MappedStatement::class, Object::class, RowBounds::class, ResultHandler::class]),
+	Signature(type = Executor::class, method = "query", args = [MappedStatement::class, Object::class, RowBounds::class, ResultHandler::class, CacheKey::class, BoundSql::class])
 )
-@Component
-class DualWriteCheckInterceptor : Interceptor {
-
-//	@Autowired
-//	lateinit var kafkaTemplate: KafkaTemplate<String, DualWriteCheckMessage>
+class DualWriteInterceptor @Autowired constructor(
+	private val dualWriteKafkaTemplate: KafkaTemplate<String, DualWriteCheckMessage>
+) : Interceptor {
 
 	companion object {
 		val ACCEPTED_SQL_COMMAND_TYPES = listOf(SqlCommandType.INSERT, SqlCommandType.UPDATE, SqlCommandType.DELETE)
+		val ACTIVE_DATABASE = DatabaseType.MySQL1
 	}
 
-	override fun intercept(invocation: Invocation?): Any {
-		println("### DualWriteConsistencyCheckInterceptor ###")
-		if (invocation == null) throw RuntimeException("Invocation cannot be null")
+	private fun setDataSource() {
+		DatabaseTypeHolder.set(ACTIVE_DATABASE)
+	}
 
-		val result = invocation.proceed()
-		println(result)
+	override fun intercept(invocation: Invocation): Any {
+		println("### DualWriteInterceptor ###")
 
-		if (!ACCEPTED_SQL_COMMAND_TYPES.contains(getMappedStatement(invocation).sqlCommandType) || result == 0) {
-			// INSERT, UPDATE, DELETE 요청이 아닌 경우 or
+		if (ACCEPTED_SQL_COMMAND_TYPES.contains(getMappedStatement(invocation).sqlCommandType)) {
+			val result = invocation.proceed()
+			val databaseType = DatabaseTypeHolder.get()
+			if (databaseType == DatabaseType.MySQL1 || result == 0)  return result
+
+			val annotation = getAnnotation(invocation) ?: return result as DualWriteCheck
+			getQueryParamsForCheck(invocation, annotation).takeIf { it.isNotEmpty() }?.run {
+				val message = DualWriteCheckMessage(
+					tableName = annotation.tableName,
+					action = annotation.action,
+					query = annotation.query,
+					params = this
+				)
+				println("# 카프카 메시지 전송 : $message")
+				dualWriteKafkaTemplate.send("dual_write_check", "dual_write_check", message)
+			}
+
+			return result
+		} else {
+			setDataSource()
+			val result = invocation.proceed()
+			DatabaseTypeHolder.clear()
 			return result
 		}
+	}
 
-		val annotation = getAnnotation(invocation) ?: return result as DualWriteCheck
+	private fun getQueryParamsForCheck(invocation: Invocation, annotation: DualWriteCheck): List<Map<String, String>> {
 		val parameterMap = getParameterMap(invocation)
-
-		val params = mutableListOf<Map<String, String>>()
+		val results = mutableListOf<Map<String, String>>()
 		annotation.params.forEach { param ->
 			val paramValue = parameterMap[param.name] ?: return@forEach
 
@@ -57,36 +81,20 @@ class DualWriteCheckInterceptor : Interceptor {
 				} else {
 					param.name
 				}
-				params.add(mapOf(key to paramValue.toString()))
+				results.add(mapOf(key to paramValue.toString()))
 			} else {
 				if (paramValue is ArrayList<*>) {
 					// 파라미터가 Collection 타입
 					paramValue.forEach {
-						params.add(getSubParam(it, param))
+						results.add(getSubParam(it, param))
 					}
 				} else {
 					// 파라미터가 Object 타입
-					params.add(getSubParam(paramValue, param))
+					results.add(getSubParam(paramValue, param))
 				}
 			}
 		}
-
-		println("### Result ###")
-		val message = DualWriteCheckMessage(
-			tableName = annotation.tableName,
-			action = annotation.action,
-			query = annotation.query,
-			params = params
-		)
-		println(message)
-
-		if (params.isNotEmpty()) {
-			println("# 카프카 메시지 전송")
-//			kafkaTemplate.send("dual_write_check", "dual_write_check", message)
-		}
-
-		throw RuntimeException("테스트 중...")
-//		return result
+		return results
 	}
 
 	private fun getSubParam(instance: Any, param: QueryParam): Map<String, String> {

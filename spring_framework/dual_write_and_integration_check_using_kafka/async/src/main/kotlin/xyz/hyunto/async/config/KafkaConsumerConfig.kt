@@ -1,4 +1,4 @@
-package xyz.hyunto.async.config.kafka
+package xyz.hyunto.async.config
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -41,11 +41,16 @@ class KafkaConsumerConfig {
 
 	@Bean
 	fun consistencyCheckConsumerFactory(): ConsumerFactory<String, DualWriteCheckMessage> {
+		val deserializer: JsonDeserializer<DualWriteCheckMessage> = JsonDeserializer(DualWriteCheckMessage::class.java)
+		deserializer.addTrustedPackages("*")
+
 		return DefaultKafkaConsumerFactory(mapOf(
 			ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to address,
 			ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
-			ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to JsonDeserializer::class.java
-		))
+			ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to JsonDeserializer::class.java,
+		),
+			StringDeserializer(),
+			deserializer)
 	}
 
 	@Bean
