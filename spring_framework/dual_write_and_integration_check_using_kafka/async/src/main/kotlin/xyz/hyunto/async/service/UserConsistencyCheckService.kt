@@ -2,7 +2,7 @@ package xyz.hyunto.async.service
 
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.listener.MessageListener
-import xyz.hyunto.core.interceptor.DualWriteCheckMessage
+import xyz.hyunto.async.listener.DualWriteCheckMessage
 
 @Deprecated("Dynamic DI 방식으로 개발")
 //class UserConsistencyCheckService : MessageListener<String, DualWriteConsistencyCheckMessage>, AbstractConsistencyCheckService<User> {

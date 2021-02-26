@@ -5,7 +5,6 @@ import org.springframework.boot.runApplication
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 
 @SpringBootApplication
-@EnableAspectJAutoProxy
 class AsyncApplication
 
 fun main(args: Array<String>) {

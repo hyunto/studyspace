@@ -12,7 +12,7 @@ import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
 import org.springframework.kafka.support.serializer.JsonDeserializer
-import xyz.hyunto.core.interceptor.DualWriteCheckMessage
+import xyz.hyunto.async.listener.DualWriteCheckMessage
 
 @Configuration
 @EnableKafka
@@ -41,7 +41,7 @@ class KafkaConsumerConfig {
 
 	@Bean
 	fun consistencyCheckConsumerFactory(): ConsumerFactory<String, DualWriteCheckMessage> {
-		val deserializer: JsonDeserializer<DualWriteCheckMessage> = JsonDeserializer(DualWriteCheckMessage::class.java)
+		val deserializer: JsonDeserializer<DualWriteCheckMessage> = JsonDeserializer(DualWriteCheckMessage::class.java, false)
 		deserializer.addTrustedPackages("*")
 
 		return DefaultKafkaConsumerFactory(mapOf(

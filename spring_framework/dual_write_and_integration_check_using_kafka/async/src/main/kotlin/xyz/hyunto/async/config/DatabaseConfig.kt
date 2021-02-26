@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.EnableTransactionManagement
-import xyz.hyunto.core.interceptor.DatabaseType
 import javax.annotation.Resource
 import javax.sql.DataSource
 

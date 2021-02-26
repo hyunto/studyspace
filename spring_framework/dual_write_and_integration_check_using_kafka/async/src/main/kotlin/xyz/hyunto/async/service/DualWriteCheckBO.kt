@@ -1,4 +1,12 @@
 package xyz.hyunto.async.service
 
-abstract class DualWriteCheckBO {
+import org.springframework.stereotype.Service
+import xyz.hyunto.async.listener.enums.TableName
+
+@Service
+class DualWriteCheckBO {
+
+	private val dualWriteCheckMap: Map<TableName, AbstractDualWriteCheck> = mutableMapOf()
+
+
 }
