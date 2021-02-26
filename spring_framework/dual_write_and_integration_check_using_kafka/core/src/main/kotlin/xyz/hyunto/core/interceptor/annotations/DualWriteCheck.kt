@@ -9,5 +9,6 @@ annotation class DualWriteCheck(
 	val tableName: TableName,	// 인터셉터로 Mapper 이름을 가져올 수 있지 않을까?
 	val action: Action,
 	val query: String,
-	val params: Array<QueryParam> = []
+	val params: Array<QueryParam> = [],
+	val multiple: Boolean = false
 )

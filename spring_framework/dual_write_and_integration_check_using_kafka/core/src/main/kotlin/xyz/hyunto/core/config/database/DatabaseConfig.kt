@@ -5,6 +5,7 @@ import org.apache.ibatis.session.SqlSessionFactory
 import org.mybatis.spring.SqlSessionFactoryBean
 import org.mybatis.spring.annotation.MapperScan
 import org.mybatis.spring.annotation.MapperScans
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
@@ -32,6 +33,9 @@ class DatabaseConfig {
 
 	@Resource(name = "dualWriteCheckKafkaTemplate")
 	private lateinit var dualWriteCheckKafkaTemplate: KafkaTemplate<String, DualWriteCheckMessage>
+
+	@Autowired
+	private lateinit var kafkaTemplate: KafkaTemplate<String, String>
 	//
 	//	@Bean
 	//	@Primary
@@ -44,9 +48,6 @@ class DatabaseConfig {
 	//		return buildSqlSessionFactory(mysql2DataSource)
 	//	}
 	//
-	//
-	//
-	//
 	//	private fun buildSqlSessionFactory(dataSource: DataSource): SqlSessionFactory {
 	//		val sqlSessionFactoryBean = SqlSessionFactoryBean()
 	//		sqlSessionFactoryBean.setDataSource(dataSource)
@@ -57,7 +58,7 @@ class DatabaseConfig {
 
 	@Bean
 	fun dualWriteCheckInterceptor(): DualWriteInterceptor {
-		return DualWriteInterceptor(dualWriteCheckKafkaTemplate)
+		return DualWriteInterceptor(kafkaTemplate)
 	}
 
 	@Bean

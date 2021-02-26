@@ -7,5 +7,5 @@ data class DualWriteCheckMessage(
 	val tableName: TableName,
 	val action: Action,
 	val query: String,
-	val params: List<Map<String, String>>
+	val params: List<List<Any>>
 )

@@ -17,6 +17,41 @@ interface UserMapper {
 		FROM user
 		WHERE id = #{id}
 	""")
-	fun selectById(@Param("id") id: Long): User?
+	fun selectById(id: Long): User?
+
+	@Select("""
+		SELECT
+			id,
+			name,
+			age
+		FROM user 
+		WHERE name = #{name}
+		LIMIT 1
+	""")
+	fun selectByName(name: String): User?
+
+	@Select("""
+		SELECT 
+			id,
+			name,
+			age
+		FROM user
+		WHERE name = #{name}
+		AND age = #{age}
+	""")
+	fun listByNameAndAge(name: String, age: Int): List<User>
+
+	@Select("""<script>
+		SELECT 
+			id,
+			name,
+			age
+		FROM user
+		WHERE name = #{name}
+		AND id IN <foreach collection='ids' item='id' open='(' separator=',' close=')'>
+			#{id}
+		</foreach>
+	</script>""")
+	fun listByNameAndIds(name: String, ids: List<Long>): List<User>
 
 }

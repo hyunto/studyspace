@@ -22,10 +22,10 @@ interface UserMapper {
 			#{user.age}
 		)
 	""")
-	@DualWriteCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
+	@DualWriteCheck(tableName = TableName.USER, action = Action.INSERT, query = "listByNameAndAge", params = [
 		QueryParam(name = "user", subQueryParams = [
 			SubQueryParam(name = "name"),
-			SubQueryParam(name = "age", mappingName = "mappingAge")
+			SubQueryParam(name = "age")
 		])
 	])
 	fun insert(@Param("user") user: User)
@@ -53,9 +53,9 @@ interface UserMapper {
 			#{age}
 		)
 	""")
-	@DualWriteCheck(tableName = TableName.USER, action = Action.INSERT, query = "selectById", params = [
+	@DualWriteCheck(tableName = TableName.USER, action = Action.INSERT, query = "listByNameAndAge", params = [
 		QueryParam(name = "name"),
-		QueryParam(name = "age", mappingName = "mappingAge")
+		QueryParam(name = "age")
 	])
 	fun insertByValue(@Param("name") name: String, @Param("age") age: Int)
 
@@ -69,10 +69,10 @@ interface UserMapper {
 			#{user.age}
 		</foreach>
 	</script>""")
-	@DualWriteCheck(tableName = TableName.USER, action = Action.INSERT, query = "list", params = [
+	@DualWriteCheck(tableName = TableName.USER, action = Action.INSERT, query = "listByNameAndAge", multiple = true, params = [
 		QueryParam(name = "users", subQueryParams = [
 			SubQueryParam(name = "name"),
-			SubQueryParam(name = "age", mappingName = "mappingAge")
+			SubQueryParam(name = "age")
 		])
 	])
 	fun inserts(@Param("users") users: List<User>)
@@ -93,8 +93,7 @@ interface UserMapper {
 	""")
 	@DualWriteCheck(tableName = TableName.USER, action = Action.UPDATE, query = "selectById", params = [
 		QueryParam(name = "user", subQueryParams = [
-			SubQueryParam(name = "id"),
-			SubQueryParam(name = "name")
+			SubQueryParam(name = "id")
 		])
 	])
 	fun update(@Param("user") user: User)
@@ -121,17 +120,17 @@ interface UserMapper {
 	""")
 	fun selectById(@Param("id") id: Long): User?
 
-	@Select("""<script>
+	@Delete("""<script>
 		DELETE FROM user
 		WHERE name = #{name}
 		AND id IN <foreach collection='ids' item='id' open='(' separator=',' close=')'>
 			#{id}
 		</foreach>
 	</script>""")
-	@DualWriteCheck(tableName = TableName.USER, action = Action.DELETE, query = "selectById", params = [
+	@DualWriteCheck(tableName = TableName.USER, action = Action.DELETE, query = "listByNameAndIds", params = [
 		QueryParam(name = "name"),
 		QueryParam(name = "ids")
 	])
-	fun deleteByNameAndIds(name: String, ids: List<Long>): List<User>
+	fun deleteByNameAndIds(name: String, ids: List<Long>)
 
 }
