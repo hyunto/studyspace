@@ -10,9 +10,6 @@ class UserDualWriteCheckBO @Autowired constructor(
 ) : AbstractDualWriteCheck() {
 
 	override fun select(queryName: String, params: List<Any>): Any? {
-		println("## UserDualWriteCheckBO")
-		println(queryName)
-		println(params)
 		return getMethod(userMapper, queryName).call(userMapper, *params.toTypedArray())
 	}
 
