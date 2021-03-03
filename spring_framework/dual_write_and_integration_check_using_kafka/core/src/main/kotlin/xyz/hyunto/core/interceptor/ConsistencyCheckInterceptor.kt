@@ -1,6 +1,10 @@
 package xyz.hyunto.core.interceptor
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.ibatis.binding.MapperMethod
 import org.apache.ibatis.cache.CacheKey
 import org.apache.ibatis.executor.Executor
@@ -21,6 +25,8 @@ import xyz.hyunto.core.interceptor.annotations.QueryParam
 import xyz.hyunto.core.interceptor.enums.Action
 import xyz.hyunto.core.interceptor.enums.TableName
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberFunctions
 
@@ -43,6 +49,7 @@ class ConsistencyCheckInterceptor @Autowired constructor(
 	}
 
 	override fun intercept(invocation: Invocation): Any {
+		println("### ConsistencyCheckInterceptor ###")
 		if (ACCEPTED_SQL_COMMAND_TYPES.contains(getMappedStatement(invocation).sqlCommandType)) {
 			val result = invocation.proceed()
 			if (DatabaseTypeHolder.get() == DatabaseType.MySQL1 || result == 0) return result
@@ -72,7 +79,8 @@ class ConsistencyCheckInterceptor @Autowired constructor(
 					activeDatabase = ACTIVE_DATABASE,
 					executionDateTime = ZonedDateTime.now()
 				)
-				val objectMapper = ObjectMapper()
+				val objectMapper = getObjectMapper()
+				println("카프카 메시지 전송 : ${objectMapper.writeValueAsString(message)}")
 				kafkaTemplate.send("dual_write_check", "dual_write_check", objectMapper.writeValueAsString(message))
 			}
 
@@ -83,6 +91,30 @@ class ConsistencyCheckInterceptor @Autowired constructor(
 			DatabaseTypeHolder.clear()
 			return result
 		}
+	}
+
+	private fun getObjectMapper(): ObjectMapper {
+		val javaTimeModule = JavaTimeModule()
+		javaTimeModule.addSerializer(ZonedDateTime::class.java, ZonedDateTimeSerializer(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+		javaTimeModule.addDeserializer(ZonedDateTime::class.java, object: JsonDeserializer<ZonedDateTime>() {
+			override fun deserialize(jsonParser: JsonParser, deserializationContext: DeserializationContext): ZonedDateTime {
+				return ZonedDateTime.parse(jsonParser.getValueAsString(), DateTimeFormatterBuilder()
+					.append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+					.optionalStart().appendOffset("+HH:MM", "+00:00").optionalEnd() // ISO-8601
+					.optionalStart().appendOffset("+HH:MM", "Z").optionalEnd() // ISO-8601
+					.optionalStart().appendOffset("+HHMM", "+0000").optionalEnd() // legacy
+					.toFormatter()
+				)
+			}
+
+		})
+
+		val objectMapper = ObjectMapper()
+		objectMapper.registerModule(KotlinModule())
+		objectMapper.registerModule(javaTimeModule)
+		objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); //모르는 프라퍼티에 대해서는 무시..
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // ISO 표준 사용
+		return objectMapper
 	}
 
 	private fun getBulkQueryParams(invocation: Invocation, annotation: ConsistencyBulkCheck): List<List<Any?>> {

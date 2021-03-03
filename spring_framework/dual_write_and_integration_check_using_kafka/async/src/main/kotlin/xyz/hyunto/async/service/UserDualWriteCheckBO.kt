@@ -9,7 +9,7 @@ class UserDualWriteCheckBO @Autowired constructor(
 	val userMapper: UserMapper
 ) : AbstractDualWriteCheck() {
 
-	override fun select(queryName: String, params: List<Any>): Any? {
+	override fun select(queryName: String, params: List<Any?>): Any? {
 		return getMethod(userMapper, queryName).call(userMapper, *params.toTypedArray())
 	}
 
