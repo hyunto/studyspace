@@ -26,14 +26,14 @@ class DualWriteCheckListener : MessageListener<String, String> {
 		val objectMapper = ObjectMapper()
 		objectMapper.registerModule(KotlinModule())
 		objectMapper.deserializationConfig
-		val message = objectMapper.readValue(data.value(), DualWriteCheckMessage::class.java)
+		val message = objectMapper.readValue(data.value(), ConsistencyCheckQueueMessage::class.java)
 
 		println(message)
 
 		val checkerBO = getChecker(message.tableName)
-		message.params.forEach { param ->
-			val result1 = checkerBO.execute(DatabaseType.MySQL1, message.query, param)
-			val result2 = checkerBO.execute(DatabaseType.MySQL2, message.query, param)
+		message.queryParams.forEach { param ->
+			val result1 = checkerBO.execute(DatabaseType.MySQL1, message.queryName, param)
+			val result2 = checkerBO.execute(DatabaseType.MySQL2, message.queryName, param)
 
 			when (message.action) {
 				Action.INSERT, Action.UPDATE -> upsertCheck(result1, result2)

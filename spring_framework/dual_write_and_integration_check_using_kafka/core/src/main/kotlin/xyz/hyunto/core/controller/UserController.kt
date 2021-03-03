@@ -46,11 +46,12 @@ class UserController @Autowired constructor(
 
 	@DeleteMapping
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	fun deleteBy(@RequestParam(required = false) name: String) {
+	fun deleteByName(@RequestParam(required = false) name: String) {
 		if (name == null) {
 			throw HttpClientErrorException(HttpStatus.BAD_REQUEST)
 		}
-		userMapper.deleteByName(name)
+		val results = userMapper.deleteByName(name)
+		println(results)
 	}
 
 	@GetMapping("/{id}")

@@ -12,7 +12,7 @@ import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
 import org.springframework.kafka.support.serializer.JsonDeserializer
-import xyz.hyunto.async.listener.DualWriteCheckMessage
+import xyz.hyunto.async.listener.ConsistencyCheckQueueMessage
 
 @Configuration
 @EnableKafka
@@ -40,8 +40,8 @@ class KafkaConsumerConfig {
 	}
 
 	@Bean
-	fun consistencyCheckConsumerFactory(): ConsumerFactory<String, DualWriteCheckMessage> {
-		val deserializer: JsonDeserializer<DualWriteCheckMessage> = JsonDeserializer(DualWriteCheckMessage::class.java, false)
+	fun consistencyCheckConsumerFactory(): ConsumerFactory<String, ConsistencyCheckQueueMessage> {
+		val deserializer: JsonDeserializer<ConsistencyCheckQueueMessage> = JsonDeserializer(ConsistencyCheckQueueMessage::class.java, false)
 		deserializer.addTrustedPackages("*")
 
 		return DefaultKafkaConsumerFactory(mapOf(
@@ -54,8 +54,8 @@ class KafkaConsumerConfig {
 	}
 
 	@Bean
-	fun consistencyCheckKafkaListenerContainerFactory(): KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, DualWriteCheckMessage>> {
-		val factory = ConcurrentKafkaListenerContainerFactory<String, DualWriteCheckMessage>()
+	fun consistencyCheckKafkaListenerContainerFactory(): KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ConsistencyCheckQueueMessage>> {
+		val factory = ConcurrentKafkaListenerContainerFactory<String, ConsistencyCheckQueueMessage>()
 		factory.consumerFactory = consistencyCheckConsumerFactory()
 		factory.setConcurrency(3)
 		factory.containerProperties.pollTimeout = 3000

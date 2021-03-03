@@ -54,4 +54,23 @@ interface UserMapper {
 	</script>""")
 	fun listByNameAndIds(name: String, ids: List<Long>): List<User>
 
+	@Select("""<script>
+		SELECT
+			id,
+			name,
+			age
+		FROM user
+		WHERE id IN <foreach collection='ids' item='id' open='(' separator=',' close=')'>
+			#{id}
+		</foreach>
+	</script>""")
+	fun listByIds(ids: List<Long>): List<User>
+
+	@Select("""
+		SELECT id, name, age
+		FROM user
+		WHERE name = #{name}
+	""")
+	fun listByName(name: String): List<User>
+
 }

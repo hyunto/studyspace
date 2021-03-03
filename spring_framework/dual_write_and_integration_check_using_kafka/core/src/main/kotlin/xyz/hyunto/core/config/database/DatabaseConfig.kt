@@ -13,8 +13,8 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import xyz.hyunto.core.interceptor.DatabaseType
-import xyz.hyunto.core.interceptor.DualWriteCheckMessage
-import xyz.hyunto.core.interceptor.DualWriteInterceptor
+import xyz.hyunto.core.interceptor.ConsistencyCheckQueueMessage
+import xyz.hyunto.core.interceptor.ConsistencyCheckInterceptor
 import javax.annotation.Resource
 import javax.sql.DataSource
 
@@ -32,7 +32,7 @@ class DatabaseConfig {
 	private lateinit var mysql2DataSource: HikariDataSource
 
 	@Resource(name = "dualWriteCheckKafkaTemplate")
-	private lateinit var dualWriteCheckKafkaTemplate: KafkaTemplate<String, DualWriteCheckMessage>
+	private lateinit var consistencyCheckQueueKafkaTemplate: KafkaTemplate<String, ConsistencyCheckQueueMessage>
 
 	@Autowired
 	private lateinit var kafkaTemplate: KafkaTemplate<String, String>
@@ -57,8 +57,8 @@ class DatabaseConfig {
 	//	}
 
 	@Bean
-	fun dualWriteCheckInterceptor(): DualWriteInterceptor {
-		return DualWriteInterceptor(kafkaTemplate)
+	fun dualWriteCheckInterceptor(): ConsistencyCheckInterceptor {
+		return ConsistencyCheckInterceptor(kafkaTemplate)
 	}
 
 	@Bean
