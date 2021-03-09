@@ -5,10 +5,14 @@ import xyz.hyunto.async.mapper.UserMapper
 import kotlin.reflect.KClass
 
 enum class TableName(
-	val checkerName: String,
-	val mapperName: String,
-	val mapper: KClass<*>
+	val mapper: KClass<*>,
+	val value: String
 ) {
-	USER("UserDualWriteCheckBO", "UserMapper", UserMapper::class),
-	GROUP("GroupDualWriteCheckBO", "GroupMapper", GroupMapper::class)
+	USER(UserMapper::class, "user"),
+	GROUP(GroupMapper::class, "group");
+
+	companion object {
+		private val mapperLookup = values().associateBy { it.mapper }
+		fun fromMapperClass(clazz: KClass<*>) = mapperLookup[clazz]
+	}
 }

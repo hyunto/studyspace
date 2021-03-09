@@ -54,16 +54,13 @@ class ConsistencyCheckInterceptor @Autowired constructor(
 			val result = invocation.proceed()
 			if (DatabaseTypeHolder.get() == DatabaseType.MySQL1 || result == 0) return result
 
-			val tableName: TableName?
 			val queryName: String?
 			val queryParams = when (val annotation = getAnnotation(invocation)) {
 				is ConsistencyCheck -> {
-					tableName = annotation.tableName
 					queryName = annotation.queryName
 					getQueryParams(invocation, annotation)
 				}
 				is ConsistencyBulkCheck -> {
-					tableName = annotation.tableName
 					queryName = annotation.queryName
 					getBulkQueryParams(invocation, annotation)
 				}
@@ -72,7 +69,7 @@ class ConsistencyCheckInterceptor @Autowired constructor(
 
 			queryParams.takeIf { it.isNotEmpty() }?.run {
 				val message = ConsistencyCheckQueueMessage(
-					tableName = tableName,
+					tableName = getTableName(invocation),
 					action = Action.fromSqlCommandType(getMappedStatement(invocation).sqlCommandType)!!,
 					queryName = queryName,
 					queryParams = this,
@@ -178,6 +175,13 @@ class ConsistencyCheckInterceptor @Autowired constructor(
 		val method = clazz.memberFunctions.firstOrNull { it.name == methodName } ?: throw RuntimeException("cannot find method (expected: $methodName)")
 		return method.annotations.firstOrNull { it.annotationClass == ConsistencyCheck::class } as? ConsistencyCheck
 			?: method.annotations.firstOrNull { it.annotationClass == ConsistencyBulkCheck::class } as? ConsistencyBulkCheck
+	}
+
+	private fun getTableName(invocation: Invocation): TableName {
+		val mappedStatement = getMappedStatement(invocation)
+		val className = mappedStatement.id.substringBeforeLast(".")
+		val clazz = Class.forName(className).kotlin
+		return TableName.fromMapperClass(clazz) ?: throw RuntimeException("table not found")
 	}
 
 	private fun getMappedStatement(invocation: Invocation): MappedStatement {

@@ -22,7 +22,7 @@ interface UserMapper {
 			#{user.age}
 		)
 	""")
-	@ConsistencyCheck(tableName = TableName.USER, queryName = "listByNameAndAge", queryParams = [
+	@ConsistencyCheck(queryName = "listByNameAndAge", queryParams = [
 		QueryParam(name = "user", subQueryParams = [
 			SubQueryParam(name = "name"),
 			SubQueryParam(name = "age")
@@ -52,7 +52,7 @@ interface UserMapper {
 			#{age}
 		)
 	""")
-	@ConsistencyCheck(tableName = TableName.USER, queryName = "listByNameAndAge", queryParams = [
+	@ConsistencyCheck(queryName = "listByNameAndAge", queryParams = [
 		QueryParam(name = "name"),
 		QueryParam(name = "age")
 	])
@@ -68,7 +68,7 @@ interface UserMapper {
 			#{user.age}
 		</foreach>
 	</script>""")
-	@ConsistencyBulkCheck(tableName = TableName.USER, queryName = "listByNameAndAge", queryParam = QueryParam(name = "users", subQueryParams = [
+	@ConsistencyBulkCheck(queryName = "listByNameAndAge", queryParam = QueryParam(name = "users", subQueryParams = [
 		SubQueryParam(name = "name"), SubQueryParam(name = "age")
 	]))
 	fun inserts(@Param("users") users: List<User>)
@@ -87,7 +87,7 @@ interface UserMapper {
 		WHERE
 			id = #{user.id}
 	""")
-	@ConsistencyCheck(tableName = TableName.USER, queryName = "selectById", queryParams = [
+	@ConsistencyCheck(queryName = "selectById", queryParams = [
 		QueryParam(name = "user", subQueryParams = [
 			SubQueryParam(name = "id")
 		])
@@ -104,7 +104,7 @@ interface UserMapper {
 		DELETE FROM user
 		WHERE name = #{name}
 	""")
-	@ConsistencyCheck(tableName = TableName.USER, queryName = "listByName", queryParams = [
+	@ConsistencyCheck(queryName = "listByName", queryParams = [
 		QueryParam(name = "name")
 	])
 	fun deleteByName(@Param("name") name: String)
@@ -123,7 +123,7 @@ interface UserMapper {
 			#{id}
 		</foreach>
 	</script>""")
-	@ConsistencyCheck(tableName = TableName.USER, queryName = "listByNameAndIds", queryParams = [
+	@ConsistencyCheck(queryName = "listByNameAndIds", queryParams = [
 		QueryParam(name = "name"),
 		QueryParam(name = "ids")
 	])

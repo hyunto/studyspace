@@ -13,15 +13,15 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.listener.MessageListener
 import org.springframework.stereotype.Service
 import xyz.hyunto.async.config.DatabaseType
+import xyz.hyunto.async.config.DatabaseTypeHolder
 import xyz.hyunto.async.listener.enums.Action
 import xyz.hyunto.async.listener.enums.TableName
-import xyz.hyunto.async.service.AbstractDualWriteCheck
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 
 @Service
-class DualWriteCheckListener : MessageListener<String, String> {
+class ConsistencyCheckListener : MessageListener<String, String> {
 
 	@Autowired
 	private lateinit var beanFactory: BeanFactory
@@ -29,7 +29,7 @@ class DualWriteCheckListener : MessageListener<String, String> {
 	private fun getObjectMapper(): ObjectMapper {
 		val javaTimeModule = JavaTimeModule()
 		javaTimeModule.addSerializer(ZonedDateTime::class.java, ZonedDateTimeSerializer(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-		javaTimeModule.addDeserializer(ZonedDateTime::class.java, object: JsonDeserializer<ZonedDateTime>() {
+		javaTimeModule.addDeserializer(ZonedDateTime::class.java, object : JsonDeserializer<ZonedDateTime>() {
 			override fun deserialize(jsonParser: JsonParser, deserializationContext: DeserializationContext): ZonedDateTime {
 				return ZonedDateTime.parse(jsonParser.getValueAsString(), DateTimeFormatterBuilder()
 					.append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -54,17 +54,18 @@ class DualWriteCheckListener : MessageListener<String, String> {
 	override fun onMessage(data: ConsumerRecord<String, String>) {
 		println("### DualWriteConsistencyCheckListener")
 		val objectMapper = getObjectMapper()
-		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 		objectMapper.deserializationConfig
 		val message = objectMapper.readValue(data.value(), ConsistencyCheckQueueMessage::class.java)
 
 		println(message)
 
-		val checkerBO = getChecker(message.tableName)
+		val mapper = getMapper(message.tableName)
+		val method = mapper::class.members.firstOrNull { it.name == message.queryName } ?: throw RuntimeException("not found method (mapper: ${message.tableName.mapper.simpleName}, method: ${message.queryName}")
 		message.queryParams.forEach { param ->
-			val result1 = checkerBO.execute(DatabaseType.MySQL1, message.queryName, param)
-			val result2 = checkerBO.execute(DatabaseType.MySQL2, message.queryName, param)
+			DatabaseTypeHolder.set(DatabaseType.MySQL1)
+			val result1 = method.call(mapper, *param.toTypedArray())
+			DatabaseTypeHolder.set(DatabaseType.MySQL2)
+			val result2 = method.call(mapper, *param.toTypedArray())
 
 			when (message.action) {
 				Action.INSERT, Action.UPDATE -> upsertCheck(result1, result2)
@@ -73,8 +74,8 @@ class DualWriteCheckListener : MessageListener<String, String> {
 		}
 	}
 
-	private fun getChecker(tableName: TableName): AbstractDualWriteCheck {
-		return beanFactory.getBean(tableName.checkerName, AbstractDualWriteCheck::class.java)
+	private fun getMapper(tableName: TableName): Any {
+		return beanFactory.getBean(tableName.mapper.javaObjectType)
 	}
 
 	private fun upsertCheck(result1: Any?, result2: Any?) {
