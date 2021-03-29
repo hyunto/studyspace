@@ -8,6 +8,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.ibatis.binding.MapperMethod
 import org.apache.ibatis.cache.CacheKey
 import org.apache.ibatis.executor.Executor
+import org.apache.ibatis.io.ResolverUtil
 import org.apache.ibatis.mapping.BoundSql
 import org.apache.ibatis.mapping.MappedStatement
 import org.apache.ibatis.mapping.SqlCommandType
@@ -18,7 +19,9 @@ import org.apache.ibatis.plugin.Signature
 import org.apache.ibatis.session.ResultHandler
 import org.apache.ibatis.session.RowBounds
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.stereotype.Repository
 import xyz.hyunto.core.interceptor.annotations.ConsistencyBulkCheck
 import xyz.hyunto.core.interceptor.annotations.ConsistencyCheck
 import xyz.hyunto.core.interceptor.annotations.QueryParam
@@ -27,6 +30,7 @@ import xyz.hyunto.core.interceptor.enums.TableName
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberFunctions
 
@@ -44,6 +48,27 @@ class ConsistencyCheckInterceptor @Autowired constructor(
 		val ACTIVE_DATABASE = DatabaseType.MySQL1
 	}
 
+	private val annotationMap: MutableMap<String, Any> = ConcurrentHashMap()
+
+	init {
+		for (mapperClass in readMappers()) {
+			mapperClass.methods.forEach { method ->
+				AnnotationUtils.findAnnotation(method, ConsistencyCheck::class.java)?.run {
+					annotationMap["${mapperClass.name}.${method.name}"] = this
+				}
+				AnnotationUtils.findAnnotation(method, ConsistencyBulkCheck::class.java)?.run {
+					annotationMap["${mapperClass.name}.${method.name}"] = this
+				}
+			}
+		}
+	}
+
+	private fun readMappers(): Set<Class<out Class<*>>> {
+		val resolverUtil = ResolverUtil<Class<*>>()
+		resolverUtil.find(ResolverUtil.AnnotatedWith(Repository::class.java), "xyz.hyunto.core")
+		return resolverUtil.classes
+	}
+
 	private fun setDataSource() {
 		DatabaseTypeHolder.set(ACTIVE_DATABASE)
 	}
@@ -54,8 +79,9 @@ class ConsistencyCheckInterceptor @Autowired constructor(
 			val result = invocation.proceed()
 			if (DatabaseTypeHolder.get() == DatabaseType.MySQL1 || result == 0) return result
 
+			val mappedStatement = getMappedStatement(invocation)
 			val queryName: String?
-			val queryParams = when (val annotation = getAnnotation(invocation)) {
+			val queryParams = when (val annotation = annotationMap[mappedStatement.id]) {
 				is ConsistencyCheck -> {
 					queryName = annotation.queryName
 					getQueryParams(invocation, annotation)

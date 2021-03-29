@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.commons.collections4.CollectionUtils
+import org.apache.ibatis.session.SqlSessionFactory
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,12 +20,16 @@ import xyz.hyunto.async.listener.enums.TableName
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
+import kotlin.reflect.KCallable
 
 @Service
 class ConsistencyCheckListener : MessageListener<String, String> {
 
 	@Autowired
 	private lateinit var beanFactory: BeanFactory
+
+	@Autowired
+	private lateinit var sqlSessionFactory: SqlSessionFactory
 
 	private fun getObjectMapper(): ObjectMapper {
 		val javaTimeModule = JavaTimeModule()
@@ -59,50 +64,80 @@ class ConsistencyCheckListener : MessageListener<String, String> {
 
 		println(message)
 
-		val mapper = getMapper(message.tableName)
-		val method = mapper::class.members.firstOrNull { it.name == message.queryName } ?: throw RuntimeException("not found method (mapper: ${message.tableName.mapper.simpleName}, method: ${message.queryName}")
+		/** 방법 1 */
+//		val mapper = getMapper(message.tableName)
+//		val method = mapper::class.members.firstOrNull { it.name == message.queryName } ?: throw RuntimeException("not found method (mapper: ${message.tableName.mapper.simpleName}, method: ${message.queryName}")
+//		message.queryParams.forEach { param ->
+//			DatabaseTypeHolder.set(DatabaseType.MySQL1)
+//			val result1 = method.call(mapper, *param.toTypedArray())
+//			DatabaseTypeHolder.set(DatabaseType.MySQL2)
+//			val result2 = method.call(mapper, *param.toTypedArray())
+//
+//			when (message.action) {
+//				Action.INSERT, Action.UPDATE -> upsertCheck(result1, result2)
+//				Action.DELETE -> deleteCheck(result1, result2)
+//			}
+//		}
+
+		/** 방법 2 */
+//		message.queryParams.forEach { param ->
+//			DatabaseTypeHolder.set(DatabaseType.MySQL1)
+//			val sqlSession1 = sqlSessionFactory.openSession()
+//			val mapper1 = sqlSession1.getMapper(message.tableName.mapper)
+//			val method1 = mapper1::class.members.firstOrNull { it.name == message.queryName } ?: throw RuntimeException("not found method (mapper: ${message.tableName.mapper.simpleName}, method: ${message.queryName}")
+//			val result1 = method1.call(mapper1, *param.toTypedArray())
+//			sqlSession1.commit()
+//			println("result1 : $result1")
+//
+//			DatabaseTypeHolder.set(DatabaseType.MySQL2)
+//			val sqlSession2 = sqlSessionFactory.openSession()
+//			val mapper2 = sqlSession2.getMapper(message.tableName.mapper)
+//			val method2 = mapper2::class.members.firstOrNull { it.name == message.queryName } ?: throw RuntimeException("not found method (mapper: ${message.tableName.mapper.simpleName}, method: ${message.queryName}")
+//			val result2 = method2.call(mapper2, *param.toTypedArray())
+//			sqlSession2.commit()
+//			println("result2 : $result2")
+//
+//			println("isEqual? : ${isEqual(result1, result2)}")
+//		}
+
+		/** 방법 3 */
 		message.queryParams.forEach { param ->
 			DatabaseTypeHolder.set(DatabaseType.MySQL1)
-			val result1 = method.call(mapper, *param.toTypedArray())
-			DatabaseTypeHolder.set(DatabaseType.MySQL2)
-			val result2 = method.call(mapper, *param.toTypedArray())
+			val result1 = execute(message.tableName.mapper, message.queryName, param)
 
-			when (message.action) {
-				Action.INSERT, Action.UPDATE -> upsertCheck(result1, result2)
-				Action.DELETE -> deleteCheck(result1, result2)
-			}
+			DatabaseTypeHolder.set(DatabaseType.MySQL2)
+			val result2 = execute(message.tableName.mapper, message.queryName, param)
+
+			println("# result1 : $result1")
+			println("# result2 : $result2")
+			println("isEqual? : ${isEqual(result1, result2)}")
 		}
+	}
+
+	private fun execute(mapperClass: Class<*>, queryName: String, queryParam: List<Any?>): Any? {
+		val sqlSession = sqlSessionFactory.openSession()
+		val mapper = sqlSession.getMapper(mapperClass)
+		val method = mapper::class.members.first { it.name == queryName }
+		val result = method.call(mapper, *queryParam.toTypedArray())
+		sqlSession.commit()
+		return result
+	}
+
+	private fun isEqual(primaryResult: Any?, secondaryResult: Any?): Boolean {
+		if ((primaryResult == null && secondaryResult != null) || (primaryResult != null && secondaryResult == null))
+			return false
+
+		if (primaryResult is Collection<*> && secondaryResult is Collection<*>)
+			return CollectionUtils.isEqualCollection(primaryResult, secondaryResult)
+
+		if (primaryResult != secondaryResult)
+			return false
+
+		return true
 	}
 
 	private fun getMapper(tableName: TableName): Any {
-		return beanFactory.getBean(tableName.mapper.javaObjectType)
-	}
-
-	private fun upsertCheck(result1: Any?, result2: Any?) {
-		println("### Check insert or update")
-		println(result1)
-		println(result2)
-		var result = false
-		if (result1 is Collection<*> && result2 is Collection<*>) {
-			result = CollectionUtils.isEqualCollection(result1, result2)
-		} else {
-			result = result1.hashCode() == result2.hashCode()
-		}
-
-		println("isConsistency? : $result")
-	}
-
-	private fun deleteCheck(result1: Any?, result2: Any?) {
-		println("### Check delete")
-		println(result1)
-		println(result2)
-		var result = false
-		if (result1 is Collection<*> && result2 is Collection<*>) {
-			result = result1.isNullOrEmpty() && result2.isNullOrEmpty()
-		} else {
-			result = result1 == null && result2 == null
-		}
-		println("isConsistency? : $result")
+		return beanFactory.getBean(tableName.mapper)
 	}
 
 }

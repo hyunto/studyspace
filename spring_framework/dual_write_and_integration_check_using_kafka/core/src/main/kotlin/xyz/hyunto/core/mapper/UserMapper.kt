@@ -6,7 +6,6 @@ import xyz.hyunto.core.interceptor.annotations.ConsistencyBulkCheck
 import xyz.hyunto.core.interceptor.annotations.ConsistencyCheck
 import xyz.hyunto.core.interceptor.annotations.QueryParam
 import xyz.hyunto.core.interceptor.annotations.SubQueryParam
-import xyz.hyunto.core.interceptor.enums.TableName
 import xyz.hyunto.core.model.User
 
 // language=SQL

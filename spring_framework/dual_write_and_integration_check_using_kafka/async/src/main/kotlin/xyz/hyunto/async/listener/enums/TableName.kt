@@ -5,11 +5,11 @@ import xyz.hyunto.async.mapper.UserMapper
 import kotlin.reflect.KClass
 
 enum class TableName(
-	val mapper: KClass<*>,
+	val mapper: Class<*>,
 	val value: String
 ) {
-	USER(UserMapper::class, "user"),
-	GROUP(GroupMapper::class, "group");
+	USER(UserMapper::class.java, "user"),
+	GROUP(GroupMapper::class.java, "group");
 
 	companion object {
 		private val mapperLookup = values().associateBy { it.mapper }
