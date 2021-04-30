@@ -32,11 +32,6 @@ interface UserMapper {
 	""")
 	fun selectByName(name: String): User?
 
-	@Results(id = "result", value = [
-		@Result(column = "id", property = "id"),
-		@Result(column = "name", property = "name"),
-		@Result(column = "age", property = "age")
-	])
 	@Select("""
 		SELECT 
 			id,

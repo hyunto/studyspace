@@ -36,6 +36,13 @@ class KafkaConsumerConfig {
 		factory.consumerFactory = consumerFactory()
 		factory.setConcurrency(3)
 		factory.containerProperties.pollTimeout = 3000
+		factory.setRecordFilterStrategy { record ->
+			record.headers().headers("x-custom-header").none {
+				val value = String(it.value())
+				println("### Custom Header : $value")
+				value == "true"
+			}
+		}
 		return factory
 	}
 
