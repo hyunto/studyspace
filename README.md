@@ -67,10 +67,10 @@
 - [x] 리팩터링 2판
 - [x] 카프카 완벽 가이드
 - [x] 코틀린 쿡북
+- [ ] 코틀린 동시성 프로그래밍
 - [ ] 실전 스프링 5를 활용한 리액티브 프로그래밍
 - [ ] 엘라스틱서치 실무 가이드
 - [ ] 코틀린으로 배우는 함수형 프로그래밍
-- [ ] 코틀린 동시성 프로그래밍
 - [ ] 리팩터링 워크북
 - [ ] 패턴을 활용한 리팩터링
 
@@ -80,6 +80,12 @@
 - [ ] 더 자바, 애플리케이션을 테스트하는 다양한 방법 (인프런)
 - [ ] Elasticsearch 이해 (사내교육)
 - [ ] FrontEnd TDD GYM (사내교육)
+
+#### 번역
+
+- [ ] [DBMS Concurrency Control: Timestamp & Lock-Based Protocols](https://www.guru99.com/dbms-concurrency-control.html)
+- [ ] [A Deep Dive into Database Concurrency Control](https://www.alibabacloud.com/blog/a-deep-dive-into-database-concurrency-control_596779)
+- [ ] [Paginating Requests in APIs](https://medium.com/@ignaciochiazzo/paginating-requests-in-apis-d4883d4c1c4c)
 
 ## Wish List
 
