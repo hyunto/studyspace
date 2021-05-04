@@ -52,6 +52,7 @@
 - (강의)Vue.js 완벽 가이드(인프런)
 - (강의)PWA 시작하기(인프런)
 
+## Studying
 
 ### 2021년
 
@@ -66,12 +67,13 @@
 
 - [x] 리팩터링 2판
 - [x] 카프카 완벽 가이드
-- [ ] 리팩터링 워크북
-- [ ] 패턴을 활용한 리팩터링
 - [x] 코틀린 쿡북
-- [ ] 코틀린으로 배우는 함수형 프로그래밍
+- [ ] 코틀린 동시성 프로그래밍
 - [ ] 실전 스프링 5를 활용한 리액티브 프로그래밍
 - [ ] 엘라스틱서치 실무 가이드
+- [ ] 코틀린으로 배우는 함수형 프로그래밍
+- [ ] 리팩터링 워크북
+- [ ] 패턴을 활용한 리팩터링
 
 #### 강의
 
@@ -79,6 +81,12 @@
 - [ ] 더 자바, 애플리케이션을 테스트하는 다양한 방법 (인프런)
 - [ ] Elasticsearch 이해 (사내교육)
 - [ ] FrontEnd TDD GYM (사내교육)
+
+#### 번역
+
+- [ ] [DBMS Concurrency Control: Timestamp & Lock-Based Protocols](https://www.guru99.com/dbms-concurrency-control.html)
+- [ ] [A Deep Dive into Database Concurrency Control](https://www.alibabacloud.com/blog/a-deep-dive-into-database-concurrency-control_596779)
+- [ ] [Paginating Requests in APIs](https://medium.com/@ignaciochiazzo/paginating-requests-in-apis-d4883d4c1c4c)
 
 ## Wish List
 
@@ -88,11 +96,7 @@
   - [ ] 자바 병렬 프로그램
   - [ ] Effective Java 3판
   - [ ] 자바 ORM 표준 JPA 프로그래밍
-  - [ ] 실전 스프링 5를 활용한 리액티브 프로그래밍
   - [ ] Kotlin In Action
-  - [ ] 코틀린 쿡북
-  - [ ] 코틀린으로 배우는 함수형 프로그래밍
-  - [ ] 코틀린 동시성 프로그래밍
 - 아키텍처 / 패턴
   - [ ] 오브젝트
   - [ ] 클린 코드
@@ -105,19 +109,15 @@
   - [ ] 테스트 주도 개발
   - [ ] 톰캣 최종분석
   - [ ] 마이크로서비스 패턴
-  - [ ] 리팩터링 워크북
-  - [ ] 패턴을 활용한 리팩터링
 - 데이터베이스
   - [ ] 파워 오브 데이터베이스
   - [ ] SQL 튜닝 비법
   - [ ] SQL AntiPatterns
   - [ ] 데이터베이스 인터널스
+  - [ ] 대용량 데이터베이스 솔루션 1
 - 시스템 /  성능
   - [ ] 자바 최적화
 
 ### 강의
 
-- [ ] 더 자바, 코드를 조작하는 다양한 방법 (인프런)
-- [ ] 더 자바, 애플리케이션을 테스트하는 다양한 방법 (인프런)
-- [ ] Elasticsearch 이해 (사내교육)
-- [ ] FrontEnd TDD GYM (사내교육)
+- TBD
